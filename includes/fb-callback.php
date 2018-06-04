@@ -1,14 +1,14 @@
 <?php
-if(!session_id()) {
-    session_start();
-}
-$config = parse_ini_file('../../app-config.ini', true);
-require_once '../vendor/autoload.php';
-$fb = new Facebook\Facebook([
-  'app_id' => $config['app_id'], // Replace {app-id} with your app id
-  'app_secret' => $config['app_secret'],
-  'default_graph_version' => 'v2.2',
-  ]);
+
+    if(!session_id()) {
+        session_start();
+    }
+    require_once dirname(dirname(__FILE__)).'/vendor/autoload.php';
+    $fb = new Facebook\Facebook([
+        'app_id' => "215485965632061",
+        'app_secret' => "8e81009fa3547ab653642bbb0948f617",
+        'default_graph_version' => 'v2.2',
+    ]);
 
 $helper = $fb->getRedirectLoginHelper();
 
@@ -51,7 +51,7 @@ $tokenMetadata = $oAuth2Client->debugToken($accessToken);
 // var_dump($tokenMetadata);
 
 // Validation (these will throw FacebookSDKException's when they fail)
-$tokenMetadata->validateAppId($config['app_id']); // Replace {app-id} with your app id
+$tokenMetadata->validateAppId('215485965632061'); // Replace {app-id} with your app id
 // If you know the user ID this access token belongs to, you can validate it here
 //$tokenMetadata->validateUserId('123');
 $tokenMetadata->validateExpiration();
@@ -71,11 +71,7 @@ if (! $accessToken->isLongLived()) {
 
 $_SESSION['fb_access_token'] = (string) $accessToken;
 
-// User is logged in with a long-lived access token.
-// You can redirect them to a members-only page.
-//header('Location: http://localhost/desktop/TheSchoolSocial/');
-
-    if (isset($accessToken)) {
+if (isset($accessToken)) {
         // Logged in!
     // Now you can redirect to another page and use the
         // access token from $_SESSION['facebook_access_token'] 
@@ -84,7 +80,7 @@ $_SESSION['fb_access_token'] = (string) $accessToken;
     // we don't have to pass it to each request
     $fb->setDefaultAccessToken($accessToken);
     try {
-        $response = $fb->get('/me?fields=email,name,gender');
+        $response = $fb->get('/me?fields=email,name');
         $userNode = $response->getGraphUser();    
     }catch(Facebook\Exceptions\FacebookResponseException $e) {
         // When Graph returns an error
@@ -95,34 +91,36 @@ $_SESSION['fb_access_token'] = (string) $accessToken;
         echo 'Facebook SDK returned an error: ' . $e->getMessage();
         exit;
     }
-    // Print the user Details
     $username = $userNode->getName();
     $id = $userNode->getProperty('id');
     $email = $userNode->getProperty('email');
-    $gender = $userNode->getProperty('gender');
     $image = 'https://graph.facebook.com/'.$userNode->getId().'/picture?width=200';
 
-    $servername = "localhost";
-    $dbname = "theschoolsocial";
-    $table = "users";
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", "root", "");
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $conn = new mysqli("localhost", "id6063824_root", "Suraj@01", "id6063824_dooplace");
 
-    $query = $conn->prepare("SELECT * FROM users WHERE id=:id");
-    $query->execute(['id'=>$id]);
-    $res = $query->rowCount();
-    if(!$res) {
-      $query = "INSERT INTO ".$table."(id, username, email, created_at, profile_pic, gender) values('$id', '$username', '$email', '".date("Y-m-d H:i:s")."', '$image', '$gender')";
-      $conn->exec($query);
+    $stmt = $conn->prepare("SELECT * FROM `fbUsers` WHERE id=?");
+    $stmt->bind_param("s",$id);
+    $stmt->execute();
+    $stmt->store_result();
+    $num_rows = $stmt->num_rows;
+    $stmt->close();
+    if(!$num_rows) {
+      $stmt = $conn->prepare("INSERT INTO fbUsers(`id`, `name`, `email`, `profilePic`) 
+            values(?, ?, ?, ?)");
+      $stmt->bind_param("ssss", $id, $username, $email, $profilePic);
+      $result = $stmt->execute();
+      $stmt->close();
     }
 
-    echo("<script>
-      alert('You are successfully logged in!!');
-    </script>");
-    header("Refresh:1; ../index.php");
+        $_SESSION['success'] = "Logged In successfully";
+        $_SESSION['fb-id'] = $id;
+        $_SESSION['name'] = $username;
+        $_SESSION['isLoggedIn'] = true;
+        $_SESSION['loginType'] = "facebook";
+        header("Location: ../index.php");   
     
     }else{
-      $permissions  = ['email', 'gender'];
+      $permissions  = ['email'];
       $loginUrl = $helper->getLoginUrl($redirect,$permissions);
       echo '<a href="' . $loginUrl . '">Log in with Facebook!</a>';
     }

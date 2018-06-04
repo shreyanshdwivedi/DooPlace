@@ -135,3 +135,7 @@
   .loginBtn--google:focus {
     background: #E74B37;
   }
+
+  form .error {
+    color: #ff0000;
+  }
