@@ -9,16 +9,24 @@
         </button>
         <a class="navbar-brand" href="index.html">Bootstrap Navbar Menu Template</a>
     </div>
-    <!-- Collect the nav links, forms, and other content for toggling -->                <div class="collapse navbar-collapse" id="top-navbar-1">
+    <!-- Collect the nav links, forms, and other content for toggling -->                
+    <div class="collapse navbar-collapse" id="top-navbar-1">
         <ul class="nav navbar-nav navbar-right">
             <li><a href="#">Become a Host</a></li>
             <li><a href="#">About Us</a></li>
             <?php
               if(isset($_SESSION['isLoggedIn']) && ($_SESSION['isLoggedIn'] == true)) {
-                echo('<li><a href="profile.php" style="cursor: pointer;">
-                  '.$_SESSION['name'].'
-                </a></li>
-                <li><a href="includes/signout.php" style="cursor: pointer;">Logout</a></li>');
+                echo('
+                <li>
+                  <a class="dropdown-toggle" id="menu1" data-toggle="dropdown" style="cursor: pointer;">'.$_SESSION['name'].'</a>
+                  <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                    <li role="presentation"><a role="menuitem" href="profile.php?section=edit">Edit Profile</a></li>
+                    <li role="presentation"><a role="menuitem" href="includes/signout.php">Logout</a></li>
+                    <li role="presentation"><a role="menuitem" href="#">JavaScript</a></li>
+                    <li role="presentation" class="divider"></li>
+                    <li role="presentation"><a role="menuitem" href="#">About Us</a></li>
+                  </ul>
+                </li> ');
               } else {
                 echo('<li><a data-toggle="modal" data-target="#SignUp" style="cursor: pointer;">SignUp</a></li>
                 <li><a data-toggle="modal" data-target="#Login" style="cursor: pointer;">Login</a></li>');
@@ -28,7 +36,24 @@
     </div>
 </div>
 </nav>
-<br/><br/>
+<br/><br/><br/>
+
+<?php
+        if(isset($_SESSION['error'])) {
+            echo('<div class="alert alert-danger alert-dismissible">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>Error!</strong> '.$_SESSION['error'].'
+                </div>');
+            unset($_SESSION['error']);
+        }
+        if(isset($_SESSION['success'])) {
+            echo('<div class="alert alert-success alert-dismissible">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>Success!</strong> '.$_SESSION['success'].'
+                </div>');
+            unset($_SESSION['success']);
+        }
+    ?>
 <div id="Login" class="modal fade" role="dialog">
 <div class="modal-dialog">
 

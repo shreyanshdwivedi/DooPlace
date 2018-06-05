@@ -1,21 +1,3 @@
-
-    <?php
-        if(isset($_SESSION['error'])) {
-            echo('<div class="alert alert-danger alert-dismissible">
-                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                    <strong>Error!</strong> '.$_SESSION['error'].'
-                </div>');
-            unset($_SESSION['error']);
-        }
-        if(isset($_SESSION['success'])) {
-            echo('<div class="alert alert-success alert-dismissible">
-                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                    <strong>Success!</strong> '.$_SESSION['success'].'
-                </div>');
-            unset($_SESSION['success']);
-        }
-    ?>
-
     <div id="jssor_1">
         <!-- Loading Screen -->
         <div data-u="loading" class="jssorl-009-spin" src="img/spin.svg" />

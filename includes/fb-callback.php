@@ -5,8 +5,8 @@
     }
     require_once dirname(dirname(__FILE__)).'/vendor/autoload.php';
     $fb = new Facebook\Facebook([
-        'app_id' => "215485965632061",
-        'app_secret' => "8e81009fa3547ab653642bbb0948f617",
+        'app_id' => "",
+        'app_secret' => "",
         'default_graph_version' => 'v2.2',
     ]);
 
@@ -51,7 +51,7 @@ $tokenMetadata = $oAuth2Client->debugToken($accessToken);
 // var_dump($tokenMetadata);
 
 // Validation (these will throw FacebookSDKException's when they fail)
-$tokenMetadata->validateAppId('215485965632061'); // Replace {app-id} with your app id
+$tokenMetadata->validateAppId(''); // Replace {app-id} with your app id
 // If you know the user ID this access token belongs to, you can validate it here
 //$tokenMetadata->validateUserId('123');
 $tokenMetadata->validateExpiration();
@@ -105,9 +105,9 @@ if (isset($accessToken)) {
     $num_rows = $stmt->num_rows;
     $stmt->close();
     if(!$num_rows) {
-      $stmt = $conn->prepare("INSERT INTO fbUsers(`id`, `name`, `email`, `profilePic`) 
+      $stmt = $conn->prepare("INSERT INTO fbUsers(`uid`, `name`, `email`, `image`) 
             values(?, ?, ?, ?)");
-      $stmt->bind_param("ssss", $id, $username, $email, $profilePic);
+      $stmt->bind_param("ssss", $id, $username, $email, $image);
       $result = $stmt->execute();
       $stmt->close();
     }

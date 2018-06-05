@@ -16,4 +16,4 @@
     <br>
     <?php include 'includes/card.php'; ?>
 
-    <?php include 'includes/footer.php'; ?>    s
+    <?php include 'includes/footer.php'; ?>
