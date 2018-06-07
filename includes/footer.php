@@ -8,7 +8,6 @@
     <script src="assets/js/retina-1.1.0.min.js"></script>
     <script src="assets/js/waypoints.min.js"></script>
     <script src="https://cdn.jsdelivr.net/jquery.validation/1.15.1/jquery.validate.min.js"></script>
-    <script src="assets/js/scripts.js"></script>
     <script src="js/card.js"></script>
     <script>
         $(function () {

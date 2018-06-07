@@ -1,12 +1,13 @@
 <?php
 
     $email = $_GET['email'];
-    $apikey = $_GET['apikey'];
+    $key = $_GET['key'];
+    $type = $_GET['type'];
 
     $conn = new mysqli("localhost", "root", "", "codingCampus");
 
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email=? AND apikey=?");
-    $stmt->bind_param("ss",$email, $apikey);
+    $stmt = $conn->prepare("SELECT * FROM users WHERE `type`=?, email=?, paramValue=?");
+    $stmt->bind_param("sss",$type, $email, $key);
     $stmt->execute();
     $user = $stmt->get_result()->fetch_assoc();
     $stmt->close();
@@ -16,8 +17,8 @@
         $_SESSION['isLoggedIn'] = false;
         header('Location: index.php');
     } else {
-        $stmt = $conn->prepare("UPDATE users SET verified=TRUE WHERE email = ?");
-        $stmt->bind_param("s",$email);
+        $stmt = $conn->prepare("UPDATE users SET email_verified=TRUE WHERE `type`=?, email=?, paramValue=?");
+        $stmt->bind_param("sss",$type, $email, $key);
         $result = $stmt->execute();
         $stmt->close();
         

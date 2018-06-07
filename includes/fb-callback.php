@@ -5,8 +5,8 @@
     }
     require_once dirname(dirname(__FILE__)).'/vendor/autoload.php';
     $fb = new Facebook\Facebook([
-        'app_id' => "",
-        'app_secret' => "",
+        'app_id' => "215485965632061",
+        'app_secret' => "8e81009fa3547ab653642bbb0948f617",
         'default_graph_version' => 'v2.2',
     ]);
 
@@ -51,7 +51,7 @@ $tokenMetadata = $oAuth2Client->debugToken($accessToken);
 // var_dump($tokenMetadata);
 
 // Validation (these will throw FacebookSDKException's when they fail)
-$tokenMetadata->validateAppId(''); // Replace {app-id} with your app id
+$tokenMetadata->validateAppId('215485965632061'); // Replace {app-id} with your app id
 // If you know the user ID this access token belongs to, you can validate it here
 //$tokenMetadata->validateUserId('123');
 $tokenMetadata->validateExpiration();
@@ -95,26 +95,37 @@ if (isset($accessToken)) {
     $id = $userNode->getProperty('id');
     $email = $userNode->getProperty('email');
     $image = 'https://graph.facebook.com/'.$userNode->getId().'/picture?width=200';
+    $type = "facebook";
+    $param = "id";
 
     $conn = new mysqli("localhost", "id6063824_root", "Suraj@01", "id6063824_dooplace");
 
-    $stmt = $conn->prepare("SELECT * FROM `fbUsers` WHERE id=?");
-    $stmt->bind_param("s",$id);
+    $stmt = $conn->prepare("SELECT * FROM users WHERE `type`=?, paramValue=?");
+    $stmt->bind_param("ss",$type, $id);
     $stmt->execute();
     $stmt->store_result();
     $num_rows = $stmt->num_rows;
     $stmt->close();
     if(!$num_rows) {
-      $stmt = $conn->prepare("INSERT INTO fbUsers(`uid`, `name`, `email`, `image`) 
-            values(?, ?, ?, ?)");
-      $stmt->bind_param("ssss", $id, $username, $email, $image);
+      $stmt = $conn->prepare("INSERT INTO users(`type`, `param`, paramValue, `name`, `email`, `image`) 
+            values(?, ?, ?, ?, ?, ?)");
+      $stmt->bind_param("ssssss", $type, $param, $id, $username, $email, $image);
       $result = $stmt->execute();
       $stmt->close();
     }
 
+        $type = "facebook";
+        $stmt = $conn->prepare("SELECT * FROM users WHERE `type`=?, paramValue=?");
+        $stmt->bind_param("ss", $type, $id);
+        $stmt->execute();
+        $user = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
         $_SESSION['success'] = "Logged In successfully";
-        $_SESSION['fb-id'] = $id;
+        $_SESSION['paramValue'] = $id;
         $_SESSION['name'] = $username;
+        $_SESSION['image'] = $image;
+        $_SESSION['userID'] = $user['id'];
         $_SESSION['isLoggedIn'] = true;
         $_SESSION['loginType'] = "facebook";
         header("Location: ../index.php");   

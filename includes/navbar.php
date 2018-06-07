@@ -31,6 +31,7 @@
                 echo('<li><a data-toggle="modal" data-target="#SignUp" style="cursor: pointer;">SignUp</a></li>
                 <li><a data-toggle="modal" data-target="#Login" style="cursor: pointer;">Login</a></li>');
               }
+              
             ?>
         </ul>
     </div>
@@ -165,3 +166,4 @@
 
 </div>
 </div>
+<br/><br/>

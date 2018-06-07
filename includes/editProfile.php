@@ -18,40 +18,21 @@
         $work = $_POST['work'];
         $timezone = $_POST['timezone'];
 
-        if($_SESSION['loginType'] == "gmail") {
-            $check = $_SESSION['etag'];
-            $stmt = $conn->prepare("SELECT * FROM gmailUsers WHERE etag=?");
-            $stmt->bind_param("s",$_SESSION['etag']);
-            $stmt->execute();
-            $user = $stmt->get_result()->fetch_assoc();
-            $stmt->close(); 
-            $stmt = $conn->prepare("UPDATE gmailUsers SET first_name=? AND last_name=? AND gender=? AND dob=? AND email=? AND phoneNum=? AND `language`=? AND currency=? AND `location`=? AND bio=? AND school=? AND work=? AND timezone=? WHERE etag=?");
-        } else if($_SESSION['loginType'] == "email") {
-            $table = "users";
-            $check = $_SESSION['email'];
-            $stmt = $conn->prepare("SELECT * FROM users WHERE email=?");
-            $stmt->bind_param("s",$_SESSION['email']);
-            $stmt->execute();
-            $user = $stmt->get_result()->fetch_assoc();
-            $stmt->close(); 
-            echo('email');
-            $stmt = $conn->prepare("UPDATE users SET first_name=?, last_name=?, gender=?, dob=?, email=?, phoneNum=?, `language`=?, currency=?, `location`=?, bio=?, school=?, work=?, timezone=? WHERE email=?");
-        } else if($_SESSION['loginType'] == "facebook") {
-            $table = "fbUsers";
-            $check = $_SESSION['fb-id'];
-            $stmt = $conn->prepare("SELECT * FROM fbUsers WHERE `uid`=?");
-            $stmt->bind_param("s",$_SESSION['fb-id']);
-            $stmt->execute();
-            $user = $stmt->get_result()->fetch_assoc();
-            $stmt->close();
-            $stmt = $conn->prepare("UPDATE fbUsers SET first_name=? AND last_name=? AND gender=? AND dob=? AND email=? AND phoneNum=? AND `language`=? AND currency=? AND `location`=? AND bio=? AND school=? AND work=? AND timezone=? WHERE `uid`=?");
-        } 
+        $stmt = $conn->prepare("SELECT * FROM users WHERE `type`=? AND paramValue=?");
+        $stmt->bind_param("ss", $_SESSION['loginType'], $_SESSION['paramValue']);
+        $stmt->execute();
+        $user = $stmt->get_result()->fetch_assoc();
+        $stmt->close(); 
 
-        $stmt->bind_param("ssssssssssssss", $first_name, $last_name, $gender, $dob, $email, $phoneNum, $language, $currency, $location, $bio, $school, $work, $timezone, $check);
+        $stmt = $conn->prepare("UPDATE users SET first_name=?, last_name=?, gender=?, dob=?, email=?, phoneNum=?, `language`=?, currency=?, `location`=?, bio=?, school=?, work=?, timezone=? WHERE `type`=? AND paramValue=?");
+        $stmt->bind_param("sssssssssssssss", $first_name, $last_name, $gender, $dob, $email, $phoneNum, $language, $currency, $location, $bio, $school, $work, $timezone, $_SESSION['loginType'], $_SESSION['paramValue']);
         $result = $stmt->execute();
         $stmt->close();
-        echo($_SESSION['email']);
 
+        if($_SESSION['loginType'] == "email") {
+            $_SESSION['paramValue'] = $email;
+        }
+        $_SESSION['name'] = $first_name." ".$last_name;
         $_SESSION['success'] = "User details edited successfully";
         header('Location: ../profile.php?section=edit');
     }
@@ -85,21 +66,10 @@
                 $_SESSION["error"] = "Sorry, there was an error uploading your file.";
             }
         }
-        if($_SESSION['loginType'] == "gmail") {
-            $stmt = $conn->prepare("UPDATE gmailUsers SET `image`=? WHERE etag=?");
-            $stmt->bind_param("ss", $img, $_SESSION['etag']);
-            $result = $stmt->execute();
-            $stmt->close();
-        } else if($_SESSION['loginType'] == "email") {
-            $stmt = $conn->prepare("UPDATE users SET `image`=? WHERE email=?");
-            $stmt->bind_param("ss", $img, $_SESSION['email']);
-            $result = $stmt->execute();
-            $stmt->close();
-        } else if($_SESSION['loginType'] == "facebook") {
-            $stmt = $conn->prepare("UPDATE fbUsers SET `image`=? WHERE `uid`=?");
-            $stmt->bind_param("ss", $img, $_SESSION['fb-id']);
-            $result = $stmt->execute();
-            $stmt->close();
-        }
+
+        $stmt = $conn->prepare("UPDATE users SET `image`=? WHERE `type`=? AND paramValue=?");
+        $stmt->bind_param("sss", $img, $_SESSION['loginType'], $_SESSION['paramValue']);
+        $result = $stmt->execute();
+        $stmt->close();
     }
 ?>

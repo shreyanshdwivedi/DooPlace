@@ -17,6 +17,8 @@
         $password = md5($pass);
         $verified = false;
         $apikey = md5(uniqid(rand(), true));
+        $loginType = "email";
+        $val = "email";
 
         $conn = new mysqli("localhost", "root", "", "codingCampus");
 
@@ -29,9 +31,9 @@
         $stmt->close();
 
         if(!($num_rows > 0)) {
-            $stmt = $conn->prepare("INSERT INTO users(`first_name`, `last_name`, `email`, `dob`, `password`, `verified`, `apikey`) 
-                    values(?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssssss", $first_name, $last_name, $email, $dob, $password, $verified, $apikey);
+            $stmt = $conn->prepare("INSERT INTO users(`type`, `param`, `paramValue`, `first_name`, `last_name`, `email`, `dob`, `password`, `email_verified`, `apikey`) 
+                    values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssssssss", $loginType, $val, $email, $first_name, $last_name, $email, $dob, $password, $verified, $apikey);
             $result = $stmt->execute();
             $stmt->close();
 
@@ -48,7 +50,7 @@
                     $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
                     $mail->SMTPAuth = true;                               // Enable SMTP authentication
                     $mail->Username = 'test22091997@gmail.com';                 // SMTP username
-                    $mail->Password = '';                           // SMTP password
+                    $mail->Password = 'Wireless031';                           // SMTP password
                     $mail->SMTPSecure = 'ssl';                            // Enable TLS encryption, `ssl` also accepted
                     $mail->Port = 465;                                    // TCP port to connect to
 
@@ -59,13 +61,23 @@
                     //Content
                     $mail->isHTML(true);                                  // Set email format to HTML
                     $mail->Subject = 'Verify';
-                    $mail->Body    = 'Please verify your account by visiting this link - http://localhost/desktop/Website-CodingCampus/verifyEmail.php?email='.$email.'&apikey='.$apikey;
+                    $mail->Body    = 'Please verify your account by visiting this link - http://localhost/desktop/Website-CodingCampus/verifyEmail.php?type=email&email='.$email.'&key='.$apikey;
 
                     $mail->send();
 
+                    $type = "email";
+                    $stmt = $conn->prepare("SELECT * FROM users WHERE `type`=?, email=?, `password`=?");
+                    $stmt->bind_param("sss", $type, $email,$password);
+                    $stmt->execute();
+                    $user = $stmt->get_result()->fetch_assoc();
+                    $stmt->close(); 
+
                     $_SESSION['success'] = "Verification mail sent successfully";
-                    $_SESSION['email'] = $user['email'];
+                    $_SESSION['paramValue'] = $user['email'];
+                    $_SESSION['userID'] = $user['id'];
+                    $_SESSION['image'] = $user['image'];
                     $_SESSION['name'] = $user['first_name']." ".$user['last_name'];
+                    $_SESSION['loginType'] = "email";
                     $_SESSION['isLoggedIn'] = true;
                     header("Location: ../index.php");
                 } catch (Exception $e) {
