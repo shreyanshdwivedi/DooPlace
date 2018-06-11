@@ -15,7 +15,13 @@
     <?php 
         include 'includes/header.php'; 
         include 'includes/navbar.php';
-        $step = $_GET['step'];
+
+        if(isset($_GET['step'])){
+            $step = $_GET['step'];
+        } else {
+            $step = 0;
+        }
+
         $conn = new mysqli("localhost", "root", "", "codingCampus");
 
         $stmt = $conn->prepare("SELECT * FROM users WHERE `type`=? AND paramValue=?");
@@ -40,7 +46,7 @@
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-6">
-                    <img src="img/host_0.jpg">
+                    <img src="img/host_0.jpg" max-width="100%">
                 </div>
             </div>
         </div>
@@ -136,7 +142,7 @@
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-6">
-                    <img src="img/host_1.jpg">
+                    <img src="img/host_1.jpg" max-width="100%">
                 </div>
             </div>
         </div>
@@ -146,9 +152,8 @@
     <?php
         if($step == 2) { 
             if(isset($_POST['property'])) {
-                $group = $_POST['property-type-group'];
-                $category = $_POST['property-type-category'];
-                $type = $_POST['room-type'];
+                $_SESSION['propertyType'] = $_POST['property-type-category'];
+                $_SESSION['roomType'] = $_POST['room-type'];
             }
     ?>
 
@@ -159,7 +164,7 @@
                     <h3><b>How many guests can your place accommodate?</b></h3>
                     <label>Number of guests</label>
                     <i class="far fa-minus-square" style="font-size: 25px; margin-right: 20px; margin-left: 20px;"></i>
-                    <input type="number" style="font-size: 20px; width: 60px;" id="numGuests" value="1" name="numGuests" disabled>
+                    <input type="number" style="font-size: 20px; width: 60px;" id="numGuests" value="1" name="numGuests" readonly>
                     <i class="far fa-plus-square" style="font-size: 25px; margin-left: 20px;"></i>
                     <br/><br/><br/>
                     <label>How many bedrooms can guests use?</label>
@@ -174,22 +179,22 @@
                     <label>How many beds can guests use?</label><br/>
                     <label>Total number of beds</label>
                     <i class="far fa-minus-square" style="font-size: 25px; margin-right: 20px; margin-left: 20px;"></i>
-                    <input type="number" style="font-size: 20px; width: 60px;" id="numBeds" value="1" disabled name="numBeds">
+                    <input type="number" style="font-size: 20px; width: 60px;" id="numBeds" value="1" readonly name="numBeds">
                     <i class="far fa-plus-square" style="font-size: 25px; margin-left: 20px;"></i>
                     <br/><br/>
                     <label>Total number of bathrooms</label>
                     <i class="far fa-minus-square" style="font-size: 25px; margin-right: 20px; margin-left: 20px;"></i>
-                    <input type="number" style="font-size: 20px; width: 60px;" id="numBathrooms" name="numBathrooms" value="1" disabled>
+                    <input type="number" style="font-size: 20px; width: 60px;" id="numBathrooms" name="numBathrooms" value="1" readonly>
                     <i class="far fa-plus-square" style="font-size: 25px; margin-left: 20px;"></i>
                     <br/><br/>
                     <a href="host.php?step=1">
                         <button class="btn btn-default btn-lg">Back</button>
                     </a>
-                    <input type="submit" class="btn btn-default btn-lg" value="Next" style="float: right;" name="accomodate" id="accomodate">
+                    <input type="submit" class="btn btn-default btn-lg" value="Next" style="float: right;" name="accomodate" id="accomodate" disabled>
                 </form>
                 </div>
                 <div class="col-sm-12 col-md-6">
-                    <img src="img/host_2.jpg">
+                    <img src="img/host_2.jpg" max-width="100%">
                 </div>
             </div>
         </div>
@@ -370,6 +375,14 @@
                     plus2.classList.remove('disabled');
                 }
             }
+            var bedrooms = document.getElementById('bedroom-select');
+            bedrooms.onchange = function(){
+                if(bedrooms.value == 0) {
+                    document.getElementById('accomodate').disabled = true;
+                } else {
+                    document.getElementById('accomodate').disabled = false;
+                }
+            }
         </script>
 
     <?php } ?>
@@ -377,10 +390,10 @@
     <?php
         if($step == 3) { 
             if(isset($_POST['accomodate'])) {
-                $numGuests = $_POST['numGuests'];
-                $numBeds = $_POST['numBeds'];
-                $bedrooms = $_POST['bedrooms'];
-                $bathrooms = $_POST['numBathrooms'];
+                $_SESSION['numGuests'] = $_POST['numGuests'];
+                $_SESSION['numBeds'] = $_POST['numBeds'];
+                $_SESSION['numBedrooms'] = $_POST['bedrooms'];
+                $_SESSION['numBathrooms'] = $_POST['numBathrooms'];
             }
     ?>
         
@@ -424,7 +437,7 @@
                     </form>
                 </div>
                 <div class="col-md-6">
-                    <img src="img/host_2.jpg">
+                    <img src="img/host_3.jpg" max-width="100%">
                 </div>
             </div>
         </div>  
@@ -497,12 +510,12 @@
     <?php
         if($step == 4) { 
             if(isset($_POST['location'])) {
-                $country = $_POST['country'];
-                $street = $_POST['street'];
-                $suite = $_POST['suite'];
-                $city = $_POST['city'];
-                $state = $_POST['state'];
-                $zip = $_POST['zip'];
+                $_SESSION['country'] = $_POST['country'];
+                $_SESSION['street'] = $_POST['street'];
+                $_SESSION['suite'] = $_POST['suite'];
+                $_SESSION['city'] = $_POST['city'];
+                $_SESSION['state'] = $_POST['state'];
+                $_SESSION['zip'] = $_POST['zip'];
             }
     ?>
 
@@ -581,7 +594,7 @@
                         </form>
                     </div>  
                     <div class="col-sm-12 col-md-6">
-                        <img src="img/host_2.jpg">
+                        <img src="img/host_4.jpg" max-width="100%">
                     </div>  
                 </div>
             </div>
@@ -591,8 +604,8 @@
     <?php
         if($step == 5) { 
             if(isset($_POST['amenities'])) {
-                $amenity = $_POST['amenity'];
-                $safety = $_POST['safetyAmenity'];
+                $_SESSION['amenity'] = $_POST['amenity'];
+                $_SESSION['safetyAmenity'] = $_POST['safetyAmenity'];
             }
     ?>
 
@@ -633,7 +646,7 @@
                         </form>
                     </div>  
                     <div class="col-sm-12 col-md-6">
-                        <img src="img/host_2.jpg">
+                        <img src="img/host_6.jpg" max-width="100%">
                     </div>  
                 </div>
             </div>
@@ -643,7 +656,7 @@
     <?php
         if($step == 6) { 
             if(isset($_POST['spaces'])) {
-                $space = $_POST['space'];
+                $_SESSION['space'] = $_POST['space'];
             }
     ?>  
         <form action="host.php?step=7" method="post" enctype="multipart/form-data">
@@ -697,7 +710,7 @@
                     </div>
                 </div>
             </div>
-
+            
             <br/><br/><br/>
             <div class="row">
                 <div class="container">
@@ -709,7 +722,6 @@
                 </div>
             </div>
         </form>
-            
             <script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
             <script>
                 console.log($("input[type='image']"));
@@ -737,11 +749,12 @@
                     }
                 }
                 
-                $("#remove").click(function() {
+                $("button").click(function() {
                     $num = $(this).attr('data-num');
+                    console.log($num);
                     $("button[data-num="+$num+"]").hide();
                     $('#blah_'+$num).hide();
-                    console.log($num);
+                    console.log($('#blah_'+$num));
                     $("input[data-num='"+$num+"']").show();
                 });
             </script>
@@ -750,13 +763,71 @@
 
     <?php
         if($step == 7) { 
-            if(isset($_POST['images'])) {
-                var_dump($_POST);
-                $images = $_POST['image'];
+            if(isset($_POST['images'])){
+                $_SESSION['images'] = $_FILES['image'];
             }
+            // if(isset($_SESSION['step']) && ($_SESSION['step'] == "7")) {
+            //     session_unset($_SESSION['step']);
     ?>
 
-    <?php } ?>
+        <div class="row">
+            <div class="container">
+                <div class="col-sm-12 col-md-6">
+                    <h3><b>Edit your description</b></h3>
+                    <form method="post" action="includes/host.php">
+                        <div class="form-group">
+                            <label>Name of your Place</label><br/>
+                            <textarea rows="2" cols="65" maxlength="50" placeholder="Listing Title (50 characters)" name="placeName" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Summary</label><br/>
+                            <textarea rows="5" cols="65" maxlength="500" placeholder="Describe your place in 500 characters" name="summary" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>About your place (optional)</label><br/>
+                            <textarea rows="5" cols="65" name="aboutPlace"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>What guests can access (optional)</label><br/>
+                            <textarea rows="5" cols="65" name="access"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Your interaction with guests (optional)</label><br/>
+                            <textarea rows="5" cols="65" name="interaction"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Other things to note (optional)</label><br/>
+                            <textarea rows="5" cols="65" name="note"></textarea>
+                        </div>
+                        <br/>
+                        <h4><b>The neighborhood</b></h4>
+                        <div class="form-group">
+                            <label>About the neighborhood (optional)</label><br/>
+                            <textarea rows="5" cols="65" name="neighborhood"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>How to get around (optional)</label><br/>
+                            <textarea rows="5" cols="65" name="getAround"></textarea>
+                        </div>
+                        <hr>
+                        <a href="host.php?step=5">
+                            <button class="btn btn-default btn-lg">Back</button>
+                        </a>
+                        <input type="submit" class="btn btn-success btn-lg" value="Finish" style="float: right;" name="details" id="details">
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <img src="img/host_7.jpg" max-width="100%">
+                </div>
+            </div>
+        </div>
+                
+    <?php 
+        // } else{
+        //     $_SESSION['error'] = "Please complete step 6th first";
+        //     header('Location: host.php?step=6');
+        // }
+        } ?>
 
     <?php 
         include 'includes/footer.php'; 

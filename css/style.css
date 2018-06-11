@@ -139,3 +139,19 @@
   form .error {
     color: #ff0000;
   }
+
+
+    .slider .indicators .indicator-item.active {
+        background-color: rgb(238, 110, 115) !important;
+    }
+
+    .slider {
+        font-family: 'Cookie', cursive;
+    }
+
+    .slider.home {
+        height: 500px !important;
+    }
+    .slides.home {
+        height: 440px !important;
+    }

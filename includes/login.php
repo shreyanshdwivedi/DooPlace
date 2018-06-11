@@ -11,7 +11,6 @@
 
         //Returning 0 means student created successfully
         $stmt = $conn->prepare("SELECT * FROM users WHERE email=? AND `password`=?");
-        var_dump($conn->error);
         $stmt->bind_param("ss", $email, $password);
         $stmt->execute();
         $user = $stmt->get_result()->fetch_assoc();

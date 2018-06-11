@@ -12,7 +12,11 @@
     <!-- Collect the nav links, forms, and other content for toggling -->                
     <div class="collapse navbar-collapse" id="top-navbar-1">
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Become a Host</a></li>
+            <?php 
+                if(isset($_SESSION['isLoggedIn']) && ($_SESSION['isLoggedIn'] == true)) {
+                    echo('<li><a href="host.php">Become a Host</a></li>');
+                }
+            ?>
             <li><a href="#">About Us</a></li>
             <?php
               if(isset($_SESSION['isLoggedIn']) && ($_SESSION['isLoggedIn'] == true)) {
@@ -166,4 +170,4 @@
 
 </div>
 </div>
-<br/><br/>
+<br/>
