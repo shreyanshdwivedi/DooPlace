@@ -2,8 +2,20 @@
   <div class="row">
     <div class="col-md-3"></div>
     <div class="col-sm-12 col-md-6">
-      <form>
-        <input type="text" name="search" placeholder="Search.." id="searchBar">
+    
+      <div class="col-sm-9 col-md-10">
+        <input type="text" name="search" placeholder="Search by Place.." id="searchBar" onFocus="geolocate()">
+      </div>
+
+      <form action="search.php" method="post">
+            <input type="text" name="street" id="street_number" hidden>
+            <input type="text" name="country" id="country" hidden>
+            <input type="text" name="city" id="locality" hidden>
+            <input type="text" name="state" id="administrative_area_level_1" hidden>  
+            <input type="number" name="zip" id="postal_code" hidden>
+            <div class="col-sm-3 col-md-2">
+              <input type="submit" class="btn btn-default btn-lg" value="Search">
+            </div>
       </form>
     </div>
     <div class="col-md-3"></div>
@@ -12,7 +24,7 @@
   <div class="row">
     <div class="col-md-3"></div>
     <div class="col-sm-12 col-md-6">
-      <div class="col-md-3 col-sm-3">
+      <!-- <div class="col-md-3 col-sm-3">
         <button type="button" class="btn btn-default" style="width: 100%;">Filter</button>
       </div>
       <div class="col-md-3 col-sm-3">
@@ -23,7 +35,7 @@
       </div>
       <div class="col-md-3 col-sm-3">
         <button type="button" class="btn btn-default" style="width: 100%;">Filter</button>       
-      </div>
+      </div> -->
     </div>
     <div class="col-md-3"></div>
   </div>
@@ -47,6 +59,12 @@
 
       if ($result->num_rows > 0) {
           while($row = $result->fetch_assoc()) {
+            $stmt = $conn->prepare("SELECT * FROM likes WHERE userID=? AND propertyID=?");
+            $stmt->bind_param("ss", $_SESSION['userID'], $row['id']);
+            $stmt->execute();
+            $num = $stmt->get_result()->num_rows;
+            $stmt->close();
+
             echo('<div class="col-sm-12 col-md-3">
               <div class="shop-card">
                 <div class="shop-image">
@@ -62,8 +80,15 @@
                       <b>');
                     echo(strtoupper($row['propertyType']));
             echo('</b>
-                    </div>
-                    <i class="far fa-heart" style="font-size: 20px; float: left; color: #737373;"></i>
+                    </div>');
+
+                  if($num>0) {
+                      echo('<i class="far fa-heart" style="font-size: 20px; float: left; color: #ff6666; cursor: pointer;" data-property-id="');
+                  } else {
+                      echo('<i class="far fa-heart" style="font-size: 20px; float: left; color: #737373; cursor: pointer;" data-property-id="');
+                  }
+            echo($row['id']);
+                    echo('"></i>
                   </div>
                   <div id="detail"><b>
                     <a href="property.php?id=');
@@ -81,7 +106,7 @@
                   </div>
                 </div>
               </div>
-            <br>');
+              </div>');
           }
       }
     ?>
@@ -107,6 +132,67 @@
           </div>
         </div> -->
     <br>
-    </div>
   </div>
 </div>
+
+    <script>
+        var placeSearch, autocomplete;
+        var componentForm = {
+            street_number: 'short_name',
+            locality: 'long_name',
+            administrative_area_level_1: 'short_name',
+            country: 'long_name',
+            postal_code: 'short_name'
+        };
+
+        function initAutocomplete() {
+            // Create the autocomplete object, restricting the search to geographical
+            // location types.
+            autocomplete = new google.maps.places.Autocomplete(
+                /** @type {!HTMLInputElement} */(document.getElementById('searchBar')),
+                {types: ['geocode']});
+
+            // When the user selects an address from the dropdown, populate the address
+            // fields in the form.
+            autocomplete.addListener('place_changed', fillInAddress);
+        }
+
+        function fillInAddress() {
+            // Get the place details from the autocomplete object.
+            var place = autocomplete.getPlace();
+
+            for (var component in componentForm) {
+              document.getElementById(component).value = '';
+            }
+
+            // Get each component of the address from the place details
+            // and fill the corresponding field on the form.
+            for (var i = 0; i < place.address_components.length; i++) {
+              var addressType = place.address_components[i].types[0];
+              if (componentForm[addressType]) {
+                  var val = place.address_components[i][componentForm[addressType]];
+                  document.getElementById(addressType).value = val;
+              }
+            }
+        }
+
+        // Bias the autocomplete object to the user's geographical location,
+        // as supplied by the browser's 'navigator.geolocation' object.
+        function geolocate() {
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(function(position) {
+                  var geolocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                  };
+                  var circle = new google.maps.Circle({
+                    center: geolocation,
+                    radius: position.coords.accuracy
+                  });
+                  autocomplete.setBounds(circle.getBounds());
+              });
+            }
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8oc4HbLoQUnqWaZr7SFnpvcLBSG7iEio&libraries=places&callback=initAutocomplete&sensor=false"
+            async defer></script>

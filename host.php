@@ -467,6 +467,7 @@
         function fillInAddress() {
             // Get the place details from the autocomplete object.
             var place = autocomplete.getPlace();
+            console.log(place);
 
             for (var component in componentForm) {
             document.getElementById(component).value = '';
@@ -778,6 +779,29 @@
                         <div class="form-group">
                             <label>Name of your Place</label><br/>
                             <textarea rows="2" cols="65" maxlength="50" placeholder="Listing Title (50 characters)" name="placeName" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Rate of your Place</label>
+                            <div class="row">
+                                <div class="col-sm-4 col-md-3">
+                                    <label style="font-size: 10px;">Currency</label>
+                                    <input type="text" name="currency" class="form-control" value="INR" readonly>
+                                </div>
+                                <div class="col-sm-8 col-md-9">
+                                    <label style="font-size: 10px;">Per Hour Rate</label>
+                                    <input type="number" name="perHourRate" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4 col-md-3">
+                                    <label style="font-size: 10px;">Currency</label>
+                                    <input type="text" name="currency" class="form-control" value="INR" readonly>
+                                </div>
+                                <div class="col-sm-8 col-md-9">
+                                    <label style="font-size: 10px;">Per Day Rate</label>
+                                    <input type="number" name="perDayRate" class="form-control">
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Summary</label><br/>

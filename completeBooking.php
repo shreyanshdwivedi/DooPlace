@@ -1,6 +1,12 @@
 <?php
     ob_start();
     session_start();
+
+    include 'includes/fb-login.php';
+    
+    require_once('includes/gmail-setting.php');
+    $login_url = 'https://accounts.google.com/o/oauth2/v2/auth?scope=' . urlencode('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/plus.me') . '&redirect_uri=' . urlencode(CLIENT_REDIRECT_URL) . '&response_type=code&client_id=' . CLIENT_ID . '&access_type=online';
+
     include 'includes/header.php';
     include 'includes/navbar.php';
 
@@ -44,6 +50,7 @@
     $checkOutDate = date('d F Y', strtotime($checkOut));
     $step = $_GET['step'];
     if($step == 0) {
+        if(isset($_SESSION['isLoggedIn']) && ($_SESSION['isLoggedIn'] == true)) {
 ?>
 
 <div class="row">
@@ -64,12 +71,12 @@
                     <li>$30.00 for loss of keys</li>
                     <li>MUST ENJOY YOUR VISIT</li><br/>
                     <form action="completeBooking.php?step=1" method="post"> 
-                        <input type="hidden" class="form-control" name="checkIn" value="<?php echo($checkIn); ?>">
-                        <input type="hidden" class="form-control" name="checkOut" value="<?php echo($checkOut); ?>">
-                        <input type="hidden" class="form-control" name="numGuests" value="<?php echo($numGuests); ?>">
-                        <input type="hidden" class="form-control" name="amount" id="amount" value="<?php echo($amount); ?>">
-                        <input type="hidden" class="form-control" name="numDays" id="numDays" value="<?php echo($numDays); ?>">
-                        <input type="hidden" class="form-control" name="propertyID" value="<?php echo($propertyID); ?>">
+                        <input type="hidden" name="checkIn" value="<?php echo($checkIn); ?>">
+                        <input type="hidden" name="checkOut" value="<?php echo($checkOut); ?>">
+                        <input type="hidden" name="numGuests" value="<?php echo($numGuests); ?>">
+                        <input type="hidden" name="amount" id="amount" value="<?php echo($amount); ?>">
+                        <input type="hidden" name="numDays" id="numDays" value="<?php echo($numDays); ?>">
+                        <input type="hidden" name="propertyID" value="<?php echo($propertyID); ?>">
                         <div class="form-group">
                             <input type="submit" class="btn btn-success btn-lg" value="Agree & Continue" style="width: 100%;" name="agree">
                         </div>
@@ -94,16 +101,16 @@
                     <div style="line-height: 2;">
                         <div> 
                             <p style="float: right;"><?php echo($property['perDayRate']); ?> * <?php echo($numDays); ?> Night <p>
-                            <p>Rs. <?php echo($amount); ?></p>
+                            <p>Rs. <?php echo($property['perDayRate']*$numDays); ?></p>
                         </div>
                         <div> 
                             <p style="float: right;">Service Fee <p>
-                            <p>Rs. <?php echo(0.18*$property['perDayRate']); ?></p>
+                            <p>Rs. <?php echo(0.18*$property['perDayRate']*$numDays); ?></p>
                         </div>
                         <hr>
                         <div> 
                             <p style="float: right;">Total <p>
-                            <p>Rs. <?php echo($amount + (0.18*$property['perDayRate'])); ?></p>
+                            <p>Rs. <?php echo($amount); ?></p>
                         </div>
                     </div>
             </div>
@@ -114,7 +121,11 @@
     </div>
 </div>
 
-    <?php }
+    <?php } else {
+            $_SESSION['error'] = "Please login first";
+            header('Location: property.php?id='.$_SESSION['propertyID']);
+        }
+    }
         if($step == 1) {
             if(!isset($_POST['agree'])) {
                 header('Location: index.php');
@@ -127,21 +138,16 @@
                 </div>
                 <div class="col-md-10 col-sm-12">
                     <div class="col-sm-7 col-md-7">
-                        <form method="post" action="completeBooking.php?step=2">
+                        <form method="post" action="PayUMoney_form.php">
                             <h3><b> Who's coming? </b></h3>
                             <div class="form-group">
                                 <label> Adults</label>
-                                <select class="form-control" name="adultGuests">
-                                    <option value="1">1 Adult</option>
-                                    <option value="2">2 Adults</option>
-                                    <option value="3">3 Adults</option>
-                                    <option value="4">4 Adults</option>
-                                    <option value="5">5 Adults</option>
-                                </select>
+                                <input type="number" class="form-control" value="<?php echo $numGuests; ?>" name="adultGuests" readonly>
                             </div>
                             <div class="form-group">
                                 <label> Children</label>
                                 <select class="form-control" name="childGuests">
+                                    <option value="0">0 Child</option>
                                     <option value="1">1 Child</option>
                                     <option value="2">2 Children</option>
                                     <option value="3">3 Children</option>
@@ -151,7 +157,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Say hello to your host</label>
-                                <textarea class="form-control" placeholder="Let your host know a little about yourself" rows="4"></textarea>
+                                <textarea class="form-control" placeholder="Let your host know a little about yourself" rows="4" name="msg"></textarea>
                             </div>
                             <div class="form-group">
                                 <label>Add your phone number</label>
@@ -176,63 +182,6 @@
                                 <input type="submit" class="btn btn-success btn-lg" style="width: 100%;" value="Continue" name="bookOne">
                             </div>
                         </form>
-                    </div>
-                    <div class="col-sm-5 col-md-5" style="border: 1px solid #eee;">
-                        <div style="padding-top: 10px; height: 80px;">
-                            <div class="col-sm-5 col-md-5"> 
-                                <img src="img/host_0.jpg" max-width="100%" height="75px">
-                            </div>
-                            <div class="col-sm-7 col-md-7" style="float: right; font-size: 18px;">
-                                <span><b><?php echo($property['name']); ?></b></span>
-                            </div>
-                        </div>
-                        <hr>
-                        <div style="line-height: 2;">
-                            <p> <?php echo($numGuests); ?> Guests </p>
-                            <p> <?php echo($checkInDate); ?> - <?php echo($checkOutDate); ?> </p>
-                        </div>
-                        <hr>
-                        <div style="line-height: 2;">
-                            <div> 
-                                <p style="float: right;"><?php echo($property['perDayRate']); ?> * <?php echo($numDays); ?> Night <p>
-                                <p>Rs. <?php echo($amount); ?></p>
-                            </div>
-                            <div> 
-                                <p style="float: right;">Service Fee <p>
-                                <p>Rs. <?php echo(0.18*$property['perDayRate']); ?></p>
-                            </div>
-                            <hr>
-                            <div> 
-                                <p style="float: right;">Total <p>
-                                <p>Rs. <?php echo($amount + (0.18*$property['perDayRate'])); ?></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-1">
-                </div>
-            </div>
-        </div>
-
-    <?php } ?>
-
-    <?php
-        if($step == 2) {
-            if(isset($_POST['bookOne'])) {
-                $adults = $_POST['adultGuests'];
-                $children = $_POST['childGuests'];
-                $countryCode = $_POST['countryCode'];
-                $phoneNum = $_POST['phoneNumber'];
-            }
-    ?>
-
-        <div class="row">
-            <div class="container">
-                <div class="col-md-1">
-                </div>
-                <div class="col-md-10 col-sm-12">
-                    <div class="col-sm-7 col-md-7">
-                            <?php include 'payumoney/PayUMoney_form.php'; ?> 
                     </div>
                     <div class="col-sm-5 col-md-5" style="border: 1px solid #eee;">
                         <div style="padding-top: 10px; height: 80px;">

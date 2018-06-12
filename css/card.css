@@ -30,7 +30,7 @@ body {
 .fa-star {
   color: #00b359 !important;
 }
-#searchBar {
+#searchBar, #searchBar_1 {
     width: 100%;
     box-sizing: border-box;
     border: 2px solid #ccc;

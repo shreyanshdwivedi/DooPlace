@@ -9,24 +9,43 @@
         var val1 = "";
         var val2 = "";
         // use this to allow certain dates only
-        var availableDates = ["08-6-2018", "10-6-2018", "15-6-2018","16-6-2018"];
-
+        // var $disabledDates = "";
+        // var $disabledDates = </?php echo $json_array; ?>;
+        
         function available(date) {
-            dmy = date.getDate() + "-" + (date.getMonth()+1) + "-" + date.getFullYear();
-            if ($.inArray(dmy, availableDates) != -1) {
+            ymd = date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
+            console.log(ymd);
+            if ($.inArray(ymd, $disabledDates) == -1) {
                 return true;
             } else {
                 return false;
             }
         }
+
+        function checkAvailability(mydate){
+            var $return=true;
+            $checkdate = $.datepicker.formatDate('yy-mm-dd', mydate);
+            for(var i = 0; i < $disabledDates.length; i++)
+                {    
+                   if($disabledDates[i] == $checkdate)
+                   {
+                        $return = false;
+                    }
+                }
+            return $return;
+        }
+
+
         $("#dt1").datepicker({
-            dateFormat: 'dd-mm-yy',
+            dateFormat: 'yy-mm-dd',
             autoclose: true,
+            startDate: '0d',
+            endDate: '+60d',
             beforeShowDay: 
                 function(dt)
                 { 
                     return available(dt);
-                },
+                }
         }).on('changeDate', function(){
             val1 = $("#dt1").val();
             console.log(val1 + " " + val2);
@@ -50,6 +69,8 @@
         $("#dt2").datepicker({
             dateFormat: 'dd-mm-yy',
             autoclose: true,
+            startDate: '0d',
+            endDate: '+60d',
             beforeShowDay: 
                 function(dt)
                 { 
@@ -95,13 +116,16 @@
                     var total = (num*date_difference)*perDayRate;
                     $("#bookingSummary").show();
                     $("#bookingSummary").html("<div><p><b>Number of Guests :</b> "+ num +"</p><p><b>Number of Days :</b> "+ date_difference +"</p><p><b>Total :</b> "+ num +" * "+date_difference+" * "+perDayRate+" = Rs. "+total +"</p></div>");
-                    $("#amount").val(total);
+                    $("#amount").val(1.18*total);
                     $("#numDays").val(date_difference);
+                    document.getElementById('book').disabled = false;
                 } else {
                     $("#bookingSummary").hide();
+                    document.getElementById('book').disabled = true;
                 }
             } else {
                 $("#bookingSummary").hide();
+                document.getElementById('book').disabled = true;
             }
         });
     </script>
@@ -203,6 +227,31 @@
                     form.submit();
                 }
             });
+        });
+    </script>
+    <script>
+        $('.far.fa-heart').on('click', function(){
+            $this = $(this);
+            var propertyID = $this.attr('data-property-id');
+            console.log(propertyID);
+            $.ajax({
+              url: 'includes/likeunlike.php',
+              type: 'post',
+              data: 'propertyID='+propertyID,
+              error: function(xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                console.log(err);
+              },
+              success: function(data){      // setting unlikes
+                console.log(data);
+                  if(data == 1){
+                      $this.css("color","#ff6666");
+                  } else {
+                      $this.css("color","#737373");
+                  }
+              }
+              
+          });
         });
     </script>
 </body>

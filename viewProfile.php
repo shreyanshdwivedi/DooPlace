@@ -17,8 +17,14 @@
         include 'includes/navbar.php';
         $conn = new mysqli("localhost", "root", "", "codingCampus");
 
-        $stmt = $conn->prepare("SELECT * FROM users WHERE `type`=? AND paramValue=?");
-        $stmt->bind_param("ss", $_SESSION['loginType'], $_SESSION['paramValue']);
+        if(isset($_GET['userID'])) {
+            $userID = $_GET['userID'];
+        } else {
+            $userID = $_SESSION['userID'];
+        }
+
+        $stmt = $conn->prepare("SELECT * FROM users WHERE id=?");
+        $stmt->bind_param("s", $userID);
         $stmt->execute();
         $user = $stmt->get_result()->fetch_assoc();
         $stmt->close(); 
@@ -28,6 +34,11 @@
         <div class="container">
             <div class="col-md-3 col-sm-12">
                 <img src="<?php if($user['image']!=""){echo $user['image'];}else{echo "img/user.jpg";}?>" alt="User Image">
+                <?php
+                    if(($user['id'] == $_SESSION['userID'])) {
+                        echo('<br/><a href="messages.php?to='.$user['id'].'" class="btn btn-default" style="width: 100%;">Send Message</a><br/>');
+                    }
+                ?>
                 <br/>
                 <div class="panel panel-default">
                     <div class="panel-heading">

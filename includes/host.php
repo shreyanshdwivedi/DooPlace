@@ -28,9 +28,9 @@
 
         //Property
         $conn = new mysqli("localhost", "root", "", "codingCampus");
-        $stmt = $conn->prepare("INSERT INTO property(userID, `name`, propertyType, roomType, numGuests, numBedrooms, numBeds, numBathrooms, amenities, safetyAmenities, spaces)
-         VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssssssss", $_SESSION['userID'], $_POST['placeName'], $_SESSION['propertyType'], $_SESSION['roomType'], $_SESSION['numGuests'], $_SESSION['numBedrooms'], $_SESSION['numBeds'], $_SESSION['numBathrooms'], $amenities, $safetyAmenities, $spaces);
+        $stmt = $conn->prepare("INSERT INTO property(userID, `name`, propertyType, roomType, numGuests, numBedrooms, numBeds, numBathrooms, amenities, safetyAmenities, spaces, perHourRate, perDayRate)
+         VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssssssss", $_SESSION['userID'], $_POST['placeName'], $_SESSION['propertyType'], $_SESSION['roomType'], $_SESSION['numGuests'], $_SESSION['numBedrooms'], $_SESSION['numBeds'], $_SESSION['numBathrooms'], $amenities, $safetyAmenities, $spaces, $_POST['perHourRate'], $_POST['perDayRate']);
         $result = $stmt->execute();
         $stmt->close();
         

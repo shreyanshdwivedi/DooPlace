@@ -7,7 +7,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="index.html">Bootstrap Navbar Menu Template</a>
+        <a class="navbar-brand" href="index.php">Bootstrap Navbar Menu Template</a>
     </div>
     <!-- Collect the nav links, forms, and other content for toggling -->                
     <div class="collapse navbar-collapse" id="top-navbar-1">
@@ -25,10 +25,11 @@
                   <a class="dropdown-toggle" id="menu1" data-toggle="dropdown" style="cursor: pointer;">'.$_SESSION['name'].'</a>
                   <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
                     <li role="presentation"><a role="menuitem" href="profile.php?section=edit">Edit Profile</a></li>
-                    <li role="presentation"><a role="menuitem" href="includes/signout.php">Logout</a></li>
-                    <li role="presentation"><a role="menuitem" href="#">JavaScript</a></li>
+                    <li role="presentation"><a role="menuitem" href="messages.php">Messages</a></li>
+                    <li role="presentation"><a role="menuitem" href="bookings.php">Bookings</a></li>
+                    <li role="presentation"><a role="menuitem" href="favorites.php">Favorites</a></li>
                     <li role="presentation" class="divider"></li>
-                    <li role="presentation"><a role="menuitem" href="#">About Us</a></li>
+                    <li role="presentation"><a role="menuitem" href="includes/signout.php">Logout</a></li>
                   </ul>
                 </li> ');
               } else {
