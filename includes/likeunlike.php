@@ -23,14 +23,18 @@ if($stm = $conn->prepare($query)){
         $stmt->close();
         echo 1;
     }else {
-        $stmt = $conn->prepare("DELETE FROM likes WHERE userID=? AND propertyID=?");
-        $stmt->bind_param("ss",$propertyID, $userID);
-        $stmt->execute();
-        $stmt->close();
-        echo 0;
+        $sql = "DELETE FROM likes WHERE userID=".$userID." AND propertyID=".$propertyID;
+        // $stmt = $conn->prepare();
+        // $stmt->bind_param("ss",$propertyID, $userID);
+        // $stmt->execute();
+        // $stmt->close();
+        if($conn->query($sql) === TRUE) {
+            echo 0;
+        }
     }
 } else {
     return -1;
 }
+$conn->close();
 
 ?>

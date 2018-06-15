@@ -27,6 +27,7 @@
                     <li role="presentation"><a role="menuitem" href="profile.php?section=edit">Edit Profile</a></li>
                     <li role="presentation"><a role="menuitem" href="messages.php">Messages</a></li>
                     <li role="presentation"><a role="menuitem" href="bookings.php">Bookings</a></li>
+                    <li role="presentation"><a role="menuitem" href="yourPlaces.php">Your Places</a></li>
                     <li role="presentation"><a role="menuitem" href="favorites.php">Favorites</a></li>
                     <li role="presentation" class="divider"></li>
                     <li role="presentation"><a role="menuitem" href="includes/signout.php">Logout</a></li>
@@ -92,6 +93,7 @@
           <div class="form-group has-feedback">
             <input type="password" name="password" id="password" class="form-control" placeholder="Password" tabindex="4">
           </div>
+          <a href="resetPassword.php" style="float: left; color: #2e6da4;">Forgot password?</a><br/>
           <hr class="colorgraph">
           <div class="row">
             <div class="col-xs-12 col-md-12">

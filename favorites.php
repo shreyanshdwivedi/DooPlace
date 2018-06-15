@@ -48,7 +48,8 @@
                 //     $num = $stm->num_rows;
                 //     $stm->close();
                 // }
-
+                
+                echo('<h3 class="text-center">Your Favorites :)</h3><br/><br/>');
                 echo('<div class="col-sm-12 col-md-3">
               <div class="shop-card">
                 <div class="shop-image">

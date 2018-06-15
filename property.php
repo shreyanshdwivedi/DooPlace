@@ -122,28 +122,51 @@
             <br/><br/><br/>
             <hr>
             <div class="property-details" style="font-size:18px; font-family: Roboto;">
-                <p><?php echo($details['summary']); ?></p>
-                <br/>
-                <b>The space</b>
-                <p><?php echo($details['aboutPlace']); ?></p>
-                <br/>
-                <b>Guest access</b>
-                <p><?php echo($details['access']); ?></p>
+                <?php 
+                    if($details['summary'] != "") {
+                        echo('<b>Summary</b><p>'.$details['summary'].'</p><br/>');
+                    }
+                    if($details['aboutPlace'] != "") {
+                        echo('<b>The Space</b><p>'.$details['summary'].'</p><br/>');
+                    }
+                    if($details['access'] != "") {
+                        echo('<b>Guest Access</b><p>'.$details['summary'].'</p><br/>');
+                    }
+                ?>
             </div>
             <hr>
             <div class="property-amenities" style="font-size:18px; font-family: Roboto;">
                 <b>Amenities</b><br/><br/>
                 <div>
-                    <div class="col-sm-6 col-md-6">
-                        <i class="fas fa-utensils"></i> Kitchen <br/><br/>
-                        <i class="fas fa-wifi"></i> Wifi <br/><br/>
-                        <i class="fas fa-parking"></i> Parking  <br/><br/>
-                    </div>
-                    <div class="col-sm-6 col-md-6">
-                        <i class="fas fa-tv"></i> TV <br/><br/>
-                        <i class="fas fa-prescription-bottle"></i> Shampoo <br/><br/>
-                        <i class="fas fa-snowflake"></i> Air Conditioning  <br/><br/>
-                    </div>
+                    <?php
+                        $amenity = explode(',', $property['amenities']);
+                        $i = 0;
+                        foreach($amenity as $a) {
+                            $i++;
+                            if(!($i == sizeof($amenity))) {
+                                echo('
+                                <div class="col-sm-6 col-md-6">
+                                    <i class="fas fa-angle-double-right"></i> '.ucfirst($a).' <br/><br/>
+                                </div>');
+                            }
+                        }
+                    ?>
+                </div><br/><br/>
+                <b>Safety Amenities</b><br/><br/>
+                <div>
+                    <?php
+                        $amenity = explode(',', $property['safetyAmenities']);
+                        $i = 0;
+                        foreach($amenity as $a) {
+                            $i++;
+                            if(!($i == sizeof($amenity))) {
+                                echo('
+                                <div class="col-sm-6 col-md-6">
+                                    <i class="fas fa-angle-double-right"></i> '.ucfirst($a).' <br/><br/>
+                                </div>');
+                            }
+                        }
+                    ?>
                 </div>
             </div>
             <hr>

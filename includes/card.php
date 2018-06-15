@@ -65,21 +65,22 @@
             $num = $stmt->get_result()->num_rows;
             $stmt->close();
 
-            echo('<div class="col-sm-12 col-md-3">
-              <div class="shop-card">
-                <div class="shop-image">
+                  echo('<div class="col-sm-12 col-md-3">
+                  <div class="shop-card">
+                  <div class="shop-image">
                   <a href="property.php?id=');
                   echo($row['id']);
-            echo('">
+                  echo('">
                     <img src="img/test1.png">
                   </a>
-                </div>
-                <div class="shop-content">
+                  </div>
+                  <div class="shop-content">
                   <div id="name">
-                    <div style="width: 90%; float: left;"> 
-                      <b>');
+                    <div style="width: 90%;');
+                  if(isset($_SESSION['isLoggedIn']) && $_SESSION['isLoggedIn'] == true){ echo('float: left;');}
+                    echo('"><b>');
                     echo(strtoupper($row['propertyType']));
-            echo('</b>
+                  echo('</b>
                     </div>');
 
                   if($num>0) {
@@ -87,20 +88,20 @@
                   } else {
                       echo('<i class="far fa-heart" style="font-size: 20px; float: left; color: #737373; cursor: pointer;" data-property-id="');
                   }
-            echo($row['id']);
+                  echo($row['id']);
                     echo('"></i>
                   </div>
-                  <div id="detail"><b>
+                  <div id="detail" style="height: 75px !important; overflow-x: ellipsis;"><b>
                     <a href="property.php?id=');
                       echo($row['id'].'" style="color: #333;">');
                     echo($row['name']);
-            echo('</b></div>
+                  echo('</b></div>
                   <div id="perRate"><span id="per">Rs.</span> <b>');
                     echo($row['perHourRate']);
-            echo('</b> <span id="per">P/Hr</span></div>
+                  echo('</b> <span id="per">P/Hr</span></div>
                   <div id="perRate"><span id="per">Rs</span> <b>');
                   echo($row['perDayRate']);
-            echo('</b> <span id="per">P/Day</span></div>
+                  echo('</b> <span id="per">P/Day</span></div>
                   <div class="starRate">
                     <i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i> Excellent
                   </div>

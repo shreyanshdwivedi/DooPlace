@@ -233,17 +233,16 @@
         $('.far.fa-heart').on('click', function(){
             $this = $(this);
             var propertyID = $this.attr('data-property-id');
-            console.log(propertyID);
             $.ajax({
               url: 'includes/likeunlike.php',
               type: 'post',
               data: 'propertyID='+propertyID,
               error: function(xhr, status, error) {
                 var err = eval("(" + xhr.responseText + ")");
-                console.log(err);
+                alert(err);
               },
-              success: function(data){      // setting unlikes
-                console.log(data);
+              success: function(data){ 
+                  console.log(data);
                   if(data == 1){
                       $this.css("color","#ff6666");
                   } else {
