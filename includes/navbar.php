@@ -7,13 +7,23 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="index.php">Bootstrap Navbar Menu Template</a>
+        <a href="index.php" style="font-size: 35px; font-family: Cookie; color: #333;">Dooplace</a>
     </div>
     <!-- Collect the nav links, forms, and other content for toggling -->                
     <div class="collapse navbar-collapse" id="top-navbar-1">
         <ul class="nav navbar-nav navbar-right">
             <?php 
                 if(isset($_SESSION['isLoggedIn']) && ($_SESSION['isLoggedIn'] == true)) {
+            ?>
+                <!-- <li><a tabindex="0"
+                class="btn btn-lg btn-primary" 
+                role="button" 
+                data-html="true" 
+                data-toggle="popover" 
+                data-trigger="focus" 
+                title="<b>Example popover</b> - title" 
+                data-content="<div><b>Example popover</b> - content</div>">Example popover</a></li> -->
+            <?php
                     echo('<li><a href="host.php">Become a Host</a></li>');
                 }
             ?>

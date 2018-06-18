@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <?php include 'includes/header.php'; ?>
 <?php
    include 'includes/navbar.php'; 
@@ -74,54 +75,149 @@
 </div>
 <br/>
 
-<?php
-    $conn = new mysqli("localhost", "root", "", "codingCampus");
-    $stmt = $conn->prepare("SELECT * FROM `location` WHERE city=? OR `state`=? OR country=?");
-    $stmt->bind_param("sss", $city, $state, $country);
-    $stmt->execute();
-    $result = $stmt->get_result();
-?>
-
 <div class="row">
   <div class="container">
     <div class="col-sm-12 col-md-6">
 
-<?php
+    <?php
+        $relatedTo = 'property';
+        $conn = new mysqli("localhost", "root", "", "codingCampus");
+        $stmt = $conn->prepare("SELECT * FROM `location` WHERE (city=? OR `state`=? OR country=?) AND relatedTo=?");
+        $stmt->bind_param("ssss", $city, $state, $country, $relatedTo);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
     while($location = $result->fetch_assoc()) {
         $stm = $conn->prepare("SELECT * FROM property WHERE id=?");
-        $stm->bind_param("s", $location['propertyID']);
+        $stm->bind_param("s", $location['relatedID']);
         $stm->execute();
         $property = $stm->get_result()->fetch_assoc();
         $stm->close();
-?>
-    <div class="col-sm-12 col-md-6">
-      <div class="shop-card">
-          <div class="shop-image">
-            <a href="property.php?id=<?php echo $property['id']; ?>">
-              <img src="img/test1.png">
-            </a>
-          </div>
-          <div class="shop-content">
-            <div id="name">
-              <div style="width: 90%; float: right;"> 
-                <b></b>
-              </div>
-              <i class="far fa-heart" style="font-size: 20px; color: #737373; float: right;"></i>
-            </div>
-            <div id="detail">
-              <a href="property.php?id=<?php echo $property['id']; ?>" style="color: #333;">
-                <b><?php echo $property['name']; ?></b>
-              </a>
-            </div>
-            <div id="perRate"><span id="per">Rs.</span> <b><?php echo $property['perHourRate']; ?></b> <span id="per">P/Hr</span></div>
-            <div id="perRate"><span id="per">Rs</span> <b><?php echo $property['perDayRate']; ?></b> <span id="per">P/Day</span></div>
-            <div class="starRate">
-              <i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i> Excellent
-            </div>
-          </div>
-        </div>
+
+        $stmt = $conn->prepare("SELECT * FROM likes WHERE ((userID=? AND relatedTo=?) AND relatedID=?)");
+        $stmt->bind_param("sss", $_SESSION['userID'], $relatedTo, $property['id']);
+        $stmt->execute();
+        $num = $stmt->get_result()->num_rows;
+        $stmt->close();
+
+        $relatedTo = 'property';
+        $stmt = $conn->prepare("SELECT * FROM images WHERE relatedTo=? AND relatedID=?");
+        $stmt->bind_param("ss", $relatedTo, $property['id']);
+        $stmt->execute();
+        $images = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+    echo('<div class="col-sm-12 col-md-6">
+    <div class="shop-card">
+    <div class="shop-image" style="border-radius: 5px;">
+    <a href="property.php?id=');
+    echo($property['id']);
+    echo('">
+      <img src="'.$images["location"].'" height="160px" width="100%">
+    </a>
     </div>
-<?php
+    <div class="shop-content">
+    <div id="name">
+      <div style="width: 90%;');
+    if(isset($_SESSION['isLoggedIn']) && $_SESSION['isLoggedIn'] == true){ echo('float: left;');}
+      echo('"><b>');
+      echo(strtoupper($property['propertyType']));
+    echo('</b>
+      </div>');
+
+    if($num>0) {
+        echo('<i class="far fa-heart" style="font-size: 20px; float: left; color: #ff6666; cursor: pointer;" data-type="property" data-property-id="');
+    } else {
+        echo('<i class="far fa-heart" style="font-size: 20px; float: left; color: #737373; cursor: pointer;" data-type="property" data-property-id="');
+    }
+    echo($restaurant['id']);
+      echo('"></i>
+    </div>
+    <div id="detail" style="height: 75px !important; overflow-x: ellipsis;"><b>
+      <a href="property.php?id=');
+        echo($property['id'].'" style="color: #333;">');
+      echo($property['name']);
+    echo('</a></b></div>
+    <div id="perRate"><span id="per">Rs</span> <b>');
+    echo($property['perDayRate']);
+    echo('</b> <span id="per">per night</span></div>
+    <div class="starRate">
+      <i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
+    </div>
+  </div>
+</div>
+</div>');
+
+    }
+
+        $relatedTo = 'restaurant';
+        $conn = new mysqli("localhost", "root", "", "codingCampus");
+        $stmt = $conn->prepare("SELECT * FROM `location` WHERE (city=? OR `state`=? OR country=?) AND relatedTo=?");
+        $stmt->bind_param("ssss", $city, $state, $country, $relatedTo);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+    while($location = $result->fetch_assoc()) {
+        $stm = $conn->prepare("SELECT * FROM restaurants WHERE id=?");
+        $stm->bind_param("s", $location['relatedID']);
+        $stm->execute();
+        $restaurant = $stm->get_result()->fetch_assoc();
+        $stm->close();
+
+        $stmt = $conn->prepare("SELECT * FROM likes WHERE ((userID=? AND relatedTo=?) AND relatedID=?)");
+        $stmt->bind_param("sss", $_SESSION['userID'], $relatedTo, $restaurant['id']);
+        $stmt->execute();
+        $num = $stmt->get_result()->num_rows;
+        $stmt->close();
+
+        $relatedTo = 'restaurant';
+        $stmt = $conn->prepare("SELECT * FROM images WHERE relatedTo=? AND relatedID=?");
+        $stmt->bind_param("ss", $relatedTo, $restaurant['id']);
+        $stmt->execute();
+        $images = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+    echo('<div class="col-sm-12 col-md-6">
+    <div class="shop-card">
+    <div class="shop-image" style="border-radius: 5px;">
+    <a href="property.php?id=');
+    echo($restaurant['id']);
+    echo('">
+      <img src="'.$images["location"].'" height="160px" width="100%">
+    </a>
+    </div>
+    <div class="shop-content">
+    <div id="name">
+      <div style="width: 90%;');
+    if(isset($_SESSION['isLoggedIn']) && $_SESSION['isLoggedIn'] == true){ echo('float: left;');}
+      echo('"><b>');
+      echo(strtoupper($restaurant['cuisine']));
+    echo('</b>
+      </div>');
+
+    if($num>0) {
+        echo('<i class="far fa-heart" style="font-size: 20px; float: left; color: #ff6666; cursor: pointer;" data-type="property" data-property-id="');
+    } else {
+        echo('<i class="far fa-heart" style="font-size: 20px; float: left; color: #737373; cursor: pointer;" data-type="property" data-property-id="');
+    }
+    echo($restaurant['id']);
+      echo('"></i>
+    </div>
+    <div id="detail" style="height: 75px !important; overflow-x: ellipsis;"><b>
+      <a href="property.php?id=');
+        echo($restaurant['id'].'" style="color: #333;">');
+      echo($restaurant['name']);
+    echo('</a></b></div>
+    <div id="perRate"><span id="per">Rs</span> <b>');
+    echo($restaurant['price']);
+    echo('</b> <span id="per">per person</span></div>
+    <div class="starRate">
+      <i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
+    </div>
+  </div>
+</div>
+</div>');
+
     }
 ?>
 </div>

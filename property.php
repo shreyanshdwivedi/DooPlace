@@ -14,11 +14,29 @@
     $property = $stmt->get_result()->fetch_assoc();
     $stmt->close(); 
 
-    $stmt = $conn->prepare("SELECT * FROM `location` WHERE propertyID=?");
-    $stmt->bind_param("s", $propertyID);
+    $relatedTo = 'property';
+    $stmt = $conn->prepare("SELECT * FROM `location` WHERE relatedTo=? AND relatedID=?");
+    $stmt->bind_param("ss", $relatedTo, $propertyID);
     $stmt->execute();
     $location = $stmt->get_result()->fetch_assoc();
     $stmt->close();
+
+    $address = "";
+    if($location['suite']!=""){
+        $address.=$location['suite']."%20";
+    }
+    if($location['street']!=""){
+        $address.=$location['street']."%20";
+    }
+    if($location['city']!=""){
+        $address.=$location['city']."%20";
+    }
+    if($location['state']!=""){
+        $address.=$location['state']."%20";
+    }
+    if($location['zip']!=""){
+        $address.=$location['zip']."%20";
+    }
     
     $stmt = $conn->prepare("SELECT * FROM `description` WHERE propertyID=?");
     $stmt->bind_param("s", $propertyID);
@@ -30,6 +48,13 @@
     $stmt->bind_param("s", $property['userID']);
     $stmt->execute();
     $owner = $stmt->get_result()->fetch_assoc();
+    $stmt->close(); 
+    
+    $relatedTo = 'property';
+    $stmt = $conn->prepare("SELECT * FROM images WHERE relatedTo=? AND relatedID=?");
+    $stmt->bind_param("ss", $relatedTo, $property['id']);
+    $stmt->execute();
+    $images = $stmt->get_result();
     $stmt->close(); 
 
     //below function returns all the dates within a given range
@@ -72,14 +97,28 @@
 ?>
 
 <div class="row">
-    <a href="img/cover.jpeg" data-lightbox="roadtrip">
-        <img src="img/cover.jpg" style="height:400px; width: 100%;">
-    </a>
-</div>
+<?php
+    $i = 0;
+    foreach($images as $img) {
+        if($i<=1) {
+?>
+    <div class="col-sm-12 col-md-6">
+        <a href="<?php echo $img["location"]; ?>" data-lightbox="roadtrip">
+            <img src="<?php echo $img["location"]; ?>" style="height:400px; width: 100%;">
+        </a>
+    </div>
 
-<a href="img/host_1.jpg" data-lightbox="roadtrip"></a>
-<a href="img/host_2.jpg" data-lightbox="roadtrip"></a>
-<a href="img/host_3.jpg" data-lightbox="roadtrip"></a>
+<?php
+    
+        $i++;
+        }
+    }
+    echo('</div>');
+    
+    foreach($images as $img) {
+        echo('<a href="'.$img['location'].'" data-lightbox="roadtrip"></a>');
+    }
+?>
 <br>
 <br>
 <div class="row">
@@ -99,7 +138,13 @@
                 </diV>
                 <div class="col-sm-3 col-md-3 text-center">
                     <a href="viewProfile.php?userID=<?php echo $owner['id']; ?>" style="color: #333;">
-                        <img src="img/user.jpg" style="height: 100px; width: 100px; border-radius: 50%;">
+                        <?php
+                            if($owner['image'] == "") {
+                                echo('<img src="img/user.jpg" style="height: 100px; width: 100px; border-radius: 50%;">');
+                            } else {
+                                echo('<img src="'.$owner['image'].'" style="height: 100px; width: 100px; border-radius: 50%;">');
+                            }
+                        ?>
                         <b><?php echo $owner['first_name']; ?></b>
                     </a>
                 </div>
@@ -136,8 +181,9 @@
             </div>
             <hr>
             <div class="property-amenities" style="font-size:18px; font-family: Roboto;">
+                <?php if($property['amenities'] != ""){ ?>
                 <b>Amenities</b><br/><br/>
-                <div>
+                <div class="row">
                     <?php
                         $amenity = explode(',', $property['amenities']);
                         $i = 0;
@@ -150,10 +196,12 @@
                                 </div>');
                             }
                         }
+                    }
                     ?>
-                </div><br/><br/>
+                
+                <br/>
+                <?php if($property['safetyAmenities'] != ""){ ?>
                 <b>Safety Amenities</b><br/><br/>
-                <div>
                     <?php
                         $amenity = explode(',', $property['safetyAmenities']);
                         $i = 0;
@@ -166,10 +214,10 @@
                                 </div>');
                             }
                         }
+                    }
                     ?>
                 </div>
             </div>
-            <hr>
         </div>
         <div class="col-md-1"></div>
         <div class="col-sm-12 col-md-4" style="border: 1px solid #eee;">
@@ -215,5 +263,48 @@
         </div>
     </div>
 </div>
+<br/>
+<div class="row">
+    <div style="width: 100%">
+        <iframe width="100%" height="600" src="https://maps.google.com/maps?width=100%&height=600&hl=en&q=<?php echo $address; ?>+(DooPlace)&ie=UTF8&t=&z=14&iwloc=B&output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0">
+          <a href="https://www.mapsdirections.info/en/custom-google-maps/">www.mapsdirections.info</a> by <a href="https://www.mapsdirections.info/en/">Measure area on map</a>
+        </iframe>
+     </div><br />
+</div>
+
+<!-- <div class="row" hidden>
+    <input id="address" type="text" value="<?php echo $address; ?>">
+</div>
+<div id="map"></div> -->
 
 <?php include 'includes/footer.php'; ?>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB8oc4HbLoQUnqWaZr7SFnpvcLBSG7iEio&callback=initMap"
+            async defer></script>
+<script>
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+           zoom: 8,
+           center: {lat: -34.397, lng: 150.644}
+        });
+        var geocoder = new google.maps.Geocoder();
+        console.log(map);
+        console.log(geocoder);
+        // geocodeAddress(geocoder, map);
+    }
+
+    function geocodeAddress(geocoder, resultsMap) {
+        var address = document.getElementById('address').value;
+        console.log(address);
+        geocoder.geocode({'address': address}, function(results, status) {
+          if (status === 'OK') {
+            resultsMap.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+              map: resultsMap,
+              position: results[0].geometry.location
+            });
+          } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+          }
+        });
+    }
+</script>

@@ -2,39 +2,64 @@
 session_start();
 if(isset($_POST)) {
 
-$propertyID = $_POST['propertyID'];
+$relatedID = $_POST['relatedID'];
 $conn = new mysqli("localhost", "root", "", "codingCampus");
 $userID = $_SESSION['userID'];
 
-// Check entry within table
-$query = "SELECT * FROM likes WHERE userID=".$userID." AND propertyID=".$propertyID;
-if($stm = $conn->prepare($query)){
-    $stm->execute();
-    $stm->store_result();
-    $num = $stm->num_rows;
-    $stm->close();
-}
+if($_POST['relatedTo'] == "property") {
+    $relatedTo = 'property';
+    $query = "SELECT * FROM likes WHERE userID=".$userID." AND (relatedID=".$relatedID." AND relatedTo='property')";
 
-    if($num == 0){
-        $stmt = $conn->prepare("INSERT INTO likes(userID, propertyID)
-            VALUES(?, ?)");
-        $stmt->bind_param("ss", $userID, $propertyID);
-        $stmt->execute();
-        $stmt->close();
-        echo 1;
-    }else {
-        $sql = "DELETE FROM likes WHERE userID=".$userID." AND propertyID=".$propertyID;
-        // $stmt = $conn->prepare();
-        // $stmt->bind_param("ss",$propertyID, $userID);
-        // $stmt->execute();
-        // $stmt->close();
-        if($conn->query($sql) === TRUE) {
-            echo 0;
+    if($stm = $conn->prepare($query)){
+        $stm->execute();
+        $stm->store_result();
+        $num = $stm->num_rows;
+        $stm->close();
+
+        if($num == 0){
+            $stmt = $conn->prepare("INSERT INTO likes(userID, relatedTo, relatedID)
+                VALUES(?, ?, ?)");
+            $stmt->bind_param("sss", $userID, $relatedTo, $relatedID);
+            $stmt->execute();
+            $stmt->close();
+            echo 1;
+        }else {
+            $sql = "DELETE FROM likes WHERE userID=".$userID." AND (relatedID=".$relatedID." AND relatedTo='property')";
+            if($conn->query($sql) === TRUE) {
+                echo 0;
+            }
         }
+    } else {
+        echo -1;
     }
-} else {
-    return -1;
+} else if($_POST['relatedTo'] == "restaurant") {
+    $relatedTo = 'restaurant';
+    $query = "SELECT * FROM likes WHERE userID=".$userID." AND (relatedID=".$relatedID." AND relatedTo='restaurant')";
+
+    if($stm = $conn->prepare($query)){
+        $stm->execute();
+        $stm->store_result();
+        $num = $stm->num_rows;
+        $stm->close();
+
+        if($num == 0){
+            $stmt = $conn->prepare("INSERT INTO likes(userID, relatedTo, relatedID)
+                VALUES(?, ?, ?)");
+            $stmt->bind_param("sss", $userID, $relatedTo, $relatedID);
+            $stmt->execute();
+            $stmt->close();
+            echo 1;
+        }else {
+            $sql = "DELETE FROM likes WHERE userID=".$userID." AND (relatedID=".$relatedID." AND relatedTo='restaurant')";
+            if($conn->query($sql) === TRUE) {
+                echo 0;
+            }
+        }
+    } else {
+        echo -1;
+    }
 }
 $conn->close();
+}
 
 ?>

@@ -4,40 +4,40 @@
         </div>
         <div data-u="slides" style="cursor:default;position:relative;top:0px;left:0px;width:980px;height:150px;overflow:hidden;">
             <div data-p="43.75">
-                <img data-u="image" src="img/001.jpg" />
+                <img data-u="image" src="img/house_3.jpg" />
             </div>
             <div data-p="43.75">
-                <img data-u="image" src="img/005.jpg" />
+                <img data-u="image" src="img/house_2.jpg" />
             </div>
             <div data-p="43.75">
-                <img data-u="image" src="img/006.jpg" />
+                <img data-u="image" src="img/rest_3.jpg" />
             </div>
             <div data-p="43.75">
-                <img data-u="image" src="img/007.jpg" />
+                <img data-u="image" src="img/rest_2.jpg" />
             </div>
             <div data-p="43.75">
-                <img data-u="image" src="img/008.jpg" />
+                <img data-u="image" src="img/office_2.jpg" />
             </div>
             <div data-p="43.75">
-                <img data-u="image" src="img/009.jpg" />
+                <img data-u="image" src="img/office_3.jpg" />
             </div>
             <div data-p="43.75">
-                <img data-u="image" src="img/010.jpg" />
+                <img data-u="image" src="img/office_4.jpg" />
             </div>
             <div data-p="43.75">
-                <img data-u="image" src="img/011.jpg" />
+                <img data-u="image" src="img/house_4.jpg" />
             </div>
             <div data-p="43.75">
-                <img data-u="image" src="img/024.jpg" />
+                <img data-u="image" src="img/host_1.jpg" />
             </div>
             <div data-p="43.75">
-                <img data-u="image" src="img/025.jpg" />
+                <img data-u="image" src="img/host_2.jpg" />
             </div>
             <div data-p="43.75">
-                <img data-u="image" src="img/026.jpg" />
+                <img data-u="image" src="img/host_3.jpg" />
             </div>
             <div data-p="43.75">
-                <img data-u="image" src="img/027.jpg" />
+                <img data-u="image" src="img/host_4.jpg" />
             </div>
         </div>
         <!-- Bullet Navigator -->

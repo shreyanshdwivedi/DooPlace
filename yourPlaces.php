@@ -31,11 +31,19 @@
     <?php
     if($result) {
         while($property = $result->fetch_assoc()) {
-            $stm = $conn->prepare("SELECT * FROM likes WHERE userID=? AND propertyID=?");
-            $stm->bind_param("ss", $_SESSION['userID'], $property['id']);
+            $relatedTo = 'property';
+            $stm = $conn->prepare("SELECT * FROM likes WHERE userID=? AND (relatedTo=? AND relatedID=?)");
+            $stm->bind_param("sss", $_SESSION['userID'], $relatedTo, $property['id']);
             $stm->execute();
             $num = $stm->get_result()->num_rows;
             $stm->close();
+
+                $relatedTo = 'property';
+                $stm = $conn->prepare("SELECT * FROM images WHERE relatedTo=? AND relatedID=?");
+                $stm->bind_param("ss", $relatedTo, $property['id']);
+                $stm->execute();
+                $image = $stm->get_result()->fetch_assoc();
+                $stm->close();
 
                 echo('<div class="col-sm-12 col-md-3">
                 <div class="shop-card">
@@ -43,7 +51,7 @@
                   <a href="property.php?id=');
                 echo($property['id']);
                 echo('">
-                    <img src="img/test1.png">
+                    <img src="'.$image['location'].'" height="160px" width="100%">
                   </a>
                 </div>
                 <div class="shop-content">
@@ -60,26 +68,23 @@
                   } else {
                       echo('<i class="far fa-heart" style="font-size: 20px; float: left; color: #737373; cursor: pointer;" data-property-id="');
                   }
-                echo($property['id']);
-                    echo('"></i>
-                  </div>
-                  <div id="detail" style="height: 75px !important; overflow-x: ellipsis;"><b>
-                    <a href="property.php?id=');
-                      echo($property['id'].'" style="color: #333;">');
-                    echo($property['name']);
-                echo('</b></div>
-                  <div id="perRate"><span id="per">Rs.</span> <b>');
-                    echo($property['perHourRate']);
-                echo('</b> <span id="per">P/Hr</span></div>
-                  <div id="perRate"><span id="per">Rs</span> <b>');
-                echo($property['perDayRate']);
-                echo('</b> <span id="per">P/Day</span></div>
-                  <div class="starRate">
-                    <i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i> Excellent
-                  </div>
+                  echo($property['id']);
+                  echo('"></i>
+                </div>
+                <div id="detail" style="height: 75px !important; overflow-x: ellipsis;"><b>
+                  <a href="restaurant.php?id=');
+                    echo($property['id'].'" style="color: #333;">');
+                  echo($property['name']);
+                echo('</a></b></div>
+                <div id="perRate"><span id="per">Rs.</span> <b>');
+                  echo($property['perDayRate']);
+                echo('</b> <span id="per">per night</span></div>');
+                echo('<div class="starRate">
+                  <i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
                 </div>
               </div>
-              </div>');
+            </div>
+            </div>');
         }
     } else {
         echo('<h3>You have yet not hosted. Try it out.. :)');

@@ -1,4 +1,10 @@
 <?php
+session_start();
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+    //Load Composer's autoloader
+require dirname(dirname(__FILE__)).'/vendor/autoload.php';
 
 class DbOperation
 {
@@ -27,6 +33,43 @@ class DbOperation
                 $result = $stmt->execute();
                 $stmt->close();
 
+                $stmt = $this->con->prepare("SELECT * FROM users WHERE id=?");
+                $stmt->bind_param("s",$recipient);
+                $stmt->execute();
+                //Getting the student result array
+                $user_to = $stmt->get_result()->fetch_all();
+                $stmt->close();
+
+                if($user_to['email'] != "") {
+                    $mail = new PHPMailer(true);                              // Passing `true` enables exceptions
+                    try {
+                        //Server settings
+                        $mail->SMTPDebug = 0;                                 // Enable verbose debug output
+                        $mail->isSMTP();                                      // Set mailer to use SMTP
+                        $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
+                        $mail->SMTPAuth = true;                               // Enable SMTP authentication
+                        $mail->Username = 'test22091997@gmail.com';                 // SMTP username
+                        $mail->Password = 'Wireless031';                           // SMTP password
+                        $mail->SMTPSecure = 'ssl';                            // Enable TLS encryption, `ssl` also accepted
+                        $mail->Port = 465;                                    // TCP port to connect to
+
+                        //Recipients
+                        $mail->setFrom('test22091997@gmail.com', 'DooPlace');
+                        $mail->addAddress($user_to['email'], $user_to['first_name']);     
+
+                        //Content
+                        $mail->isHTML(true);                                  // Set email format to HTML
+                        $mail->Subject = 'Message Received';
+                        $mail->Body    = "Hello ".$user_to['first_name']."<br/>".$_SESSION['name']." sent a message to you.
+                                        \"".$message."\"";
+
+                        $mail->send();
+
+                        $_SESSION['success'] = "Mail sent successfully";
+                    } catch (Exception $e) {
+                        $_SESSION['error'] = "There is an error in sending mail!!";
+                    }
+                }       
                 if($result){
                     return 0;
                 } else {

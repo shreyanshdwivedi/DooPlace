@@ -1,4 +1,4 @@
-    <?php 
+<?php 
         session_start(); 
         if(!($_SESSION['isLoggedIn'] == true)) {
             header('Location: index.html');
@@ -106,12 +106,36 @@
                                     <input type="email" name="email" id="email" class="form-control" placeholder="Email Address" tabindex="4" value="<?php echo $user['email'];?>">
                                 </div>
                             </div> <br/><br/>
-                            <div class="form-group has-feedback">
+                            <div class="form-group has-feedback" style="height: auto;">
                                 <label class="control-label col-sm-2 col-md-4" for="phoneNum">Phone Number</label>
                                 <div class="col-sm-10 col-md-8">
-                                    <input type="number" name="phoneNum" id="phoneNum" class="form-control" placeholder="Phone Number" tabindex="4" value="<?php if($user['phoneNum'] != 0){echo $user['phoneNum'];}?>">
+                                    <div class="row">
+                                        <div class="col-sm-3 col-md-3">
+                                            <input type="text" name="countryCode" id="countryCode" class="form-control" placeholder="+91" tabindex="4" value="<?php if($user['countryCode'] != ""){echo $user['countryCode'];}?>">
+                                        </div>
+                                        <div class="col-sm-9 col-md-9">
+                                            <input type="number" name="phoneNum" id="phoneNum" class="form-control" placeholder="Phone Number" tabindex="4" value="<?php if($user['phoneNum'] != ""){echo $user['phoneNum'];}?>">
+                                        </div>
+                                        <!-- <div class="col-sm-3 col-md-3">
+                                            <button type="button" class="btn btn-success" id="sendOTP">Send OTP</button>
+                                        </div> -->
+                                    </div>
+                                    <!-- <p style="font-size: 10px;">Phone number will not be added without verifying. Please verify first.</p> 
+                                    <div class="row" id="otpStatus" style="color: green; display: none;"></div>
+                                    <div class="row" style="display: none;" id="verifyPhone">
+                                        <div class="col-sm-8 col-md-8">
+                                            <input type="number" id="otpCheck" class="form-control" placeholder="Enter your 7 digit OTP"> 
+                                        </div>
+                                        <div class="col-sm-3 col-md-3">
+                                            <button type="button" class="btn btn-info" id="verifyOTP">Verify</button> 
+                                        </div>
+                                        <div class="col-sm-1 col-md-1">
+
+                                        </div>
+                                        <br/>
+                                    </div> -->
                                 </div>
-                            </div> <br/><br/>
+                            </div> <br/><br/><br/><br/>
                             <div class="form-group has-feedback">
                                 <label class="control-label col-sm-2 col-md-4" for="language">Preferred Language</label>
                                 <div class="col-sm-10 col-md-8">
@@ -427,9 +451,9 @@
                                 <div class="col-md-4">
                                     <?php
                                         if($user['image'] == "") {
-                                            echo('<img src="img/user.jpg" height="100%" width="100%" style="border-radius: 50%;" name="image">');
+                                            echo('<img src="img/user.jpg" height="245px" width="245px" style="border-radius: 50%;" name="image">');
                                         } else {
-                                            echo('<img src="'.$user["image"].'" height="100%" width="100%" style="border-radius: 50%;" name="image">');
+                                            echo('<img src="'.$user["image"].'" height="245px" width="245px" style="border-radius: 50%;" name="image">');
                                         }
                                     ?>
                                 </div>
@@ -530,3 +554,26 @@
     <?php
     }
     include 'includes/footer.php'; ?>
+    <!-- <script>
+        $('#sendOTP').on('click', function(){
+            var phoneNum = $('#phoneNum').val();
+            var countryCode = $('#countryCode').val();
+            console.log('Hii');
+
+            $.ajax({
+              url: 'includes/send-sms.php',
+              type: 'post',
+              data: {countryCode: countryCode, phoneNum: phoneNum},
+              error: function(xhr, status, error) {
+                var err = eval("(" + xhr.responseText + ")");
+                console.log('Hi');
+              },
+              success: function(data){ 
+                  console.log("Yo");
+                  if(data == 1){
+                      $('#verifyPhone').css('display', 'block');
+                  }
+              }
+            });
+        });
+    </script> -->

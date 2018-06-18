@@ -1,4 +1,5 @@
 <?php
+  ob_start();
   session_start();
 
   use PHPMailer\PHPMailer\PHPMailer;
@@ -16,6 +17,12 @@
   $productinfo =$_POST["productinfo"];
   $email       =$_POST["email"];
   $salt        ="eCwWELxi";
+
+  $restaurantID = $_SESSION['restaurantID'];
+  $bookDate = $_SESSION['bookDate'];
+  $bookTime = $_SESSION['bookTime'];
+  $numGuests = $_SESSION['numGuests'];
+  $price = $_SESSION['price'];
 
   If (isset($_POST["additionalCharges"])) {
     $additionalCharges =$_POST["additionalCharges"];
@@ -37,35 +44,45 @@
     include 'includes/footer.php';
 
   } else {
-    $bookingStatus = "success";
-
+    $bookingStatus = 'success';
+    $bookD = date('Y-m-d', strtotime($_SESSION['bookDate']));
+    $bookT = date("H:i", strtotime($_SESSION['bookTime']));
     $conn = new mysqli("localhost", "root", "", "codingCampus");
 
-    $cIn = date('Y-m-d', strtotime($_SESSION['checkIn']));
-    $cOut = date('Y-m-d', strtotime($_SESSION['checkOut']));
-    $stmt = $conn->prepare("INSERT INTO bookings(userID, propertyID, adultGuests, childGuests, msg, countryCode, phoneNum, checkIn, checkOut, `status`) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssssssss", $_SESSION['userID'], $_SESSION['propertyID'], $_SESSION['adults'], $_SESSION['children'], $_SESSION['msg'], $_SESSION['countryCode'], $_SESSION['phoneNum'], $cIn, $cOut, $bookingStatus);
+    
+    $stmt = $conn->prepare("INSERT INTO restaurantBookings(userID, restaurantID, numGuests, phoneNum, bookingDate, bookingTime, `status`, amount, msg) values(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssssss", $_SESSION['userID'], $_SESSION['restaurantID'], $_SESSION['numGuests'], $_SESSION['phoneNum'], $bookD, $bookT, $bookingStatus, $amount, $_SESSION['msg']);
     $result = $stmt->execute();
     $stmt->close();
 
     $bookingID = $conn->insert_id;
 
-    $relatedTo = 'property';
+    // $query = "INSERT INTO restaurantBookings(userID, restaurantID, numGuests, phoneNum, bookingDate, bookingTime, `status`, amount, msg) values(".$_SESSION['userID'].", ".$_SESSION['restaurantID'].", ".$_SESSION['numGuests'].", ".$_SESSION['phoneNum'].", ".$bookD.", ".$bookT.", ".$bookingStatus.", ".$amount.", ".$_SESSION['msg'];
+
+    // if($stm = $conn->prepare($query)){
+    //     $stm->execute();
+    //     $stm->close();
+
+    //     $bookingID = $conn->insert_id;
+    //     echo "Hi";
+    // }
+    // echo $conn->error;
+
+    $relatedTo = 'restaurant';
     $stmt = $conn->prepare("INSERT INTO payments(bookingID, userID, relatedTo, relatedID, `status`, firstName, amount, txnID, txnHash, txnKey, productInfo, email) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     echo $conn->error;
-    $stmt->bind_param("ssssssssssss", $bookingID, $_SESSION['userID'], $relatedTo, $_SESSION['propertyID'], $status, $firstname, $amount, $txnid, $hash, $key, $productinfo, $email);
+    $stmt->bind_param("ssssssssssss", $bookingID, $_SESSION['userID'], $relatedTo, $_SESSION['restaurantID'], $status, $firstname, $amount, $txnid, $hash, $key, $productinfo, $email);
     $result = $stmt->execute();
     $stmt->close();
 
-    $stmt = $conn->prepare("SELECT * FROM property WHERE id=?");
-    $stmt->bind_param("s", $_SESSION['propertyID']);
+    $stmt = $conn->prepare("SELECT * FROM restaurants WHERE id=?");
+    $stmt->bind_param("s", $_SESSION['restaurantID']);
     $stmt->execute();
-    $property = $stmt->get_result()->fetch_assoc();
+    $restaurant = $stmt->get_result()->fetch_assoc();
     $stmt->close(); 
 
     include 'includes/header.php';
     include 'includes/navbar.php';
-
                 $mail = new PHPMailer(true);                              // Passing `true` enables exceptions
                 try {
                     //Server settings
@@ -85,14 +102,14 @@
                     //Content
                     $mail->isHTML(true);                                  // Set email format to HTML
                     $mail->Subject = 'Booking Successful';
-                    $mail->Body    = 'Congratulations!<br/> We are happy to inform you that your booking for <b>'.$property['name'].'</b> is confirmed.<br/>
-                                      CheckIn Date - <b>'.$_SESSION['checkIn'].'</b><br/>
-                                      CheckOut Date - <b>'.$_SESSION['checkOut'].'</b><br/>
-                                      Enjoy your stay!';
+                    $mail->Body    = 'Congratulations!<br/> We are happy to inform you that your booking for <b>'.$restaurant['name'].'</b> is confirmed.<br/>
+                                      Date - <b>'.$_SESSION['bookDate'].'</b><br/>
+                                      Time - <b>'.$_SESSION['bookTime'].'</b><br/>
+                                      Enjoy your visit!';
 
                     $mail->send();
-                    $_SESSION['success'] = "Booking successful";
-                    header("Location: index.php");
+                    $_SESSION['success'] = "Restaurant booking successful";
+                    // header("Location: index.php");
                 } catch (Exception $e) {
                   $_SESSION['error'] = "There was an error in booking!!";
                   header("Location: index.php");
@@ -105,5 +122,6 @@
     echo "</center>";
 
     include 'includes/footer.php';
+    $conn->close();
   }         
 ?>	

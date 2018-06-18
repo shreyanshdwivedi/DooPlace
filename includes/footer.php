@@ -1,3 +1,46 @@
+    <br/><br/><br/><br/>
+    <hr>
+    
+    <footer>
+        <div class="row">
+            <div class="container" style="font-size: 18px;">
+                <i>
+                <div class="col-sm-3 col-md-3">
+                    <ul style="list-style: none;">
+                        <li><b>Dooplace</b></li>
+                        <li>Restaurants</li>
+                        <li>Offices</li>
+                        <li>Houses</li>
+                    </ul>
+                </div>
+                <div class="col-sm-3 col-md-3">
+                    <ul style="list-style: none;">
+                        <li><b>Houses</b></li>
+                        <li>Entire Place</li>
+                        <li>Shared Room</li>
+                        <li>Private Room</li>
+                    </ul>
+                </div>
+                <div class="col-sm-3 col-md-3">
+                    <ul style="list-style: none;">
+                        <li><b>Restaurant</b></li>
+                        <li>Indian</li>
+                        <li>Chinese</li>
+                        <li>American</li>
+                    </ul>
+                </div>
+                </i>
+                <div class="col-sm-3 col-md-3">
+                    <i class="fab fa-facebook-f"></i>  
+                    <i class="fab fa-twitter" style="margin-left: 20px;"></i>
+                    <i class="fab fa-linkedin-in" style="margin-left: 20px;"></i>
+                    <br/><br/>
+                    Dooplace <i class="far fa-copyright"></i> 2018
+                </div>
+            </div>
+        </div>
+    </footer>
+    
     <script src="js/jssor.slider-27.1.0.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="js/script.js"></script>
     <script type="text/javascript">jssor_1_slider_init();</script>
@@ -9,8 +52,18 @@
         var val1 = "";
         var val2 = "";
         // use this to allow certain dates only
-        // var $disabledDates = "";
-        // var $disabledDates = </?php echo $json_array; ?>;
+        <?php 
+            if(isset($json_array)) {
+        ?>
+                var $disabledDates = <?php echo $json_array; ?>;
+                console.log($disabledDates);
+        <?php
+            } else {
+        ?>
+                var $disabledDates = [];
+        <?php
+            }
+        ?>
         
         function available(date) {
             ymd = date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
@@ -96,6 +149,30 @@
                 document.getElementById('book').disabled = true;
             }
         });
+        $(document).ready(function(){
+            $('[data-toggle="popover"]').popover();   
+        });
+
+        <?php 
+            if(isset($json_array_days)) {
+        ?>
+                var $disabledDays = <?php echo $json_array_days; ?>;
+                console.log($disabledDays);
+        <?php
+            } else {
+        ?>
+                var $disabledDays = [];
+        <?php
+            }
+        ?>
+        $("#drb").datepicker({
+            dateFormat: 'dd-mm-yy',
+            autoclose: true,
+            startDate: '0d',
+            endDate: '+60d',
+            daysOfWeekDisabled: $disabledDays
+        });
+
         $("#numGuests").on('input', function(){
             var num = $(this).val();
             if(!((val1=="") || (val2==""))){
@@ -232,11 +309,12 @@
     <script>
         $('.far.fa-heart').on('click', function(){
             $this = $(this);
-            var propertyID = $this.attr('data-property-id');
+            var relatedID = $this.attr('data-property-id');
+            var relatedTo = $this.attr('data-type');
             $.ajax({
               url: 'includes/likeunlike.php',
               type: 'post',
-              data: 'propertyID='+propertyID,
+              data: {relatedTo: relatedTo, relatedID: relatedID},
               error: function(xhr, status, error) {
                 var err = eval("(" + xhr.responseText + ")");
                 alert(err);
@@ -245,13 +323,31 @@
                   console.log(data);
                   if(data == 1){
                       $this.css("color","#ff6666");
-                  } else {
+                  } else if(data == 0) {
                       $this.css("color","#737373");
+                  } else if(data == -1) {
+                      alert('Error!');
                   }
               }
               
           });
         });
+    </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script>
+        $(function() {
+            $('input[name="daterange"]').daterangepicker({
+                opens: 'left',
+                minDate: new Date()
+            }, function(start, end, label) {
+                // console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));4
+                // console.log(start.format('MM/DD/YYYY'));
+                window.location.href = "http://localhost/desktop/Website-CodingCampus/index.php?startDate="+start.format('MM/DD/YYYY')+"&endDate="+end.format('MM/DD/YYYY');
+            });
+        });
+        $("#dateFilter").on('click', function(){
+            $("#daterange").click();
+        }); 
     </script>
 </body>
 </html>

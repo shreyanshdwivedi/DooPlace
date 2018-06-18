@@ -142,7 +142,7 @@
                       <input type="hidden" name="propertyID" value="<?php echo($propertyID); ?>">
                       <div class="form-group">
                         <label>Amount</label>
-                        <input class="form-control" name="amount" type="number" value="<?php echo(empty($posted['amount']) ? "150" : $posted['amount']); ?>" readonly/>
+                        <input class="form-control" name="amount" type="number" value="<?php echo(empty($posted['amount']) ? $amount : $posted['amount']); ?>" readonly/>
                       </div>
                       <div class="form-group">
                         <label>First Name</label>

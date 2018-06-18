@@ -32,8 +32,9 @@
         $property = $stmt->get_result()->fetch_assoc();
         $stmt->close(); 
 
-        $stmt = $conn->prepare("SELECT * FROM `location` WHERE propertyID=?");
-        $stmt->bind_param("s", $propertyID);
+        $relatedTo = 'property';
+        $stmt = $conn->prepare("SELECT * FROM `location` WHERE relatedTo=? AND relatedID=?");
+        $stmt->bind_param("ss", $relatedTo, $propertyID);
         $stmt->execute();
         $location = $stmt->get_result()->fetch_assoc();
         $stmt->close();
@@ -138,7 +139,7 @@
                 </div>
                 <div class="col-md-10 col-sm-12">
                     <div class="col-sm-7 col-md-7">
-                        <form method="post" action="PayUMoney_form.php">
+                        <form method="post" action="PayUMoney_property.php">
                             <h3><b> Who's coming? </b></h3>
                             <div class="form-group">
                                 <label> Adults</label>

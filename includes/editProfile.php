@@ -9,6 +9,7 @@
         $gender = $_POST['gender'];
         $dob = $_POST['dob'];
         $email = $_POST['email'];
+        $countryCode = $_POST['countryCode'];
         $phoneNum = $_POST['phoneNum'];
         $language = $_POST['language'];
         $currency = $_POST['currency'];
@@ -24,8 +25,8 @@
         $user = $stmt->get_result()->fetch_assoc();
         $stmt->close(); 
 
-        $stmt = $conn->prepare("UPDATE users SET first_name=?, last_name=?, gender=?, dob=?, email=?, phoneNum=?, `language`=?, currency=?, `location`=?, bio=?, school=?, work=?, timezone=? WHERE `type`=? AND paramValue=?");
-        $stmt->bind_param("sssssssssssssss", $first_name, $last_name, $gender, $dob, $email, $phoneNum, $language, $currency, $location, $bio, $school, $work, $timezone, $_SESSION['loginType'], $_SESSION['paramValue']);
+        $stmt = $conn->prepare("UPDATE users SET first_name=?, last_name=?, gender=?, dob=?, email=?, countryCode=?, phoneNum=?, `language`=?, currency=?, `location`=?, bio=?, school=?, work=?, timezone=? WHERE `type`=? AND paramValue=?");
+        $stmt->bind_param("ssssssssssssssss", $first_name, $last_name, $gender, $dob, $email, $countryCode, $phoneNum, $language, $currency, $location, $bio, $school, $work, $timezone, $_SESSION['loginType'], $_SESSION['paramValue']);
         $result = $stmt->execute();
         $stmt->close();
 
@@ -71,5 +72,6 @@
         $stmt->bind_param("sss", $img, $_SESSION['loginType'], $_SESSION['paramValue']);
         $result = $stmt->execute();
         $stmt->close();
+        header("Location: ../profile.php?section=image");
     }
 ?>

@@ -38,8 +38,8 @@
                 <div class="col-sm-12 col-md-6">
                     <div>
                         <h3><b>Hi there, <?php echo $user['first_name']; ?> </b></h3><br/>
-                        <p style="font-size: 20px;">We’re excited to learn about the experience you’d like to host on DooPlace.</p>
-                        <p style="font-size: 20px;">In just a few minutes, you’ll start to create your experience page, then you’ll submit it to be reviewed by DooPlace.</p>
+                        <p style="font-size: 20px;">We’re excited to that you’d like to host on DooPlace.</p>
+                        <p style="font-size: 20px;">In just a few minutes, you’ll start to create your hosting page, then you’ll submit it to be reviewed by DooPlace.</p>
                         <a href="host.php?step=1">
                             <button class="btn btn-default btn-lg">Next</button>
                         </a>

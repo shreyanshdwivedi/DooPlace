@@ -1,6 +1,19 @@
 <?php
     session_start();
 ?>    
+    <?php
+        if(isset($_GET['startDate']) && isset($_GET['endDate'])) {
+            $sd = $_GET['startDate'];
+            $date=date_create($sd);
+            $startDate = date_format($date,"Y-m-d");
+
+            $ed = $_GET['endDate'];
+            $date=date_create($ed);
+            $endDate = date_format($date,"Y-m-d");
+        } else if(isset($_GET['place'])) {
+            $place = $_GET['place'];
+        }
+    ?>
     <?php include 'includes/fb-login.php'; ?>
     
     <?php
